@@ -1,6 +1,6 @@
 /*!
- * [libraryName] v0.0.0
- * (c) [authorFullName]
+ * llobotomy-azure v0.0.0
+ * (c) Matthieu Balmes
  * Released under the MIT License.
  */
 

@@ -2,7 +2,7 @@
  * A Branded Type for values parseable to number.
  */
 export type NumberParseable = (number | string | boolean) & {
-  readonly isNumberParseble: unique symbol;
+    readonly isNumberParseble: unique symbol;
 };
 
 /**
@@ -22,4 +22,4 @@ export type NumberParseable = (number | string | boolean) & {
  * @param value - An `unknown` value to be checked.
  */
 export const isNumberParseable = (value: unknown): value is NumberParseable =>
-  !Number.isNaN(Number(value));
+    !Number.isNaN(Number(value));
