@@ -6,6 +6,11 @@
 [![Package minified & gzipped size](https://badgen.net/bundlephobia/minzip/llobotomy-azure)](https://bundlephobia.com/package/llobotomy-azure)
 [![Package dependency count](https://badgen.net/bundlephobia/dependency-count/reactllobotomy-azure)](https://bundlephobia.com/package/llobotomy-azure)
 
+This library is a temporary solution for those of us who are using Azure Open AI APIs instead of the public Open AI APIs.
+At the time of this writing, the Azure OpenAI API doesn't expose the Assistants API so we're emulating it using the other APIs (mainly Chat Completions with Function Calling).
+
+The library aims at having roughly the same public API as my other NPM package [LLobotoMy](https://github.com/paztek/llobotomy).
+
 ## Installation
 
 This library is published in the NPM registry and can be installed using any compatible package manager.
@@ -15,23 +20,6 @@ npm install llobotomy-azure --save
 
 # For Yarn, use the command below.
 yarn add llobotomy-azure
-```
-
-### Installation from CDN
-
-This module has an UMD bundle available through JSDelivr and Unpkg CDNs.
-
-```html
-<!-- For UNPKG use the code below. -->
-<script src="https://unpkg.com/llobotomy-azure"></script>
-
-<!-- For JSDelivr use the code below. -->
-<script src="https://cdn.jsdelivr.net/npm/llobotomy-azure"></script>
-
-<script>
-  // UMD module is exposed through the "llobotomy-azure" global variable.
-  console.log(llobotomy-azure);
-</script>
 ```
 
 ## Documentation

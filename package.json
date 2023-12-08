@@ -1,18 +1,15 @@
 {
     "name": "llobotomy-azure",
-    "version": "0.0.0",
-    "description": "",
-    "cdn": "dist/index.umd.js",
+    "version": "0.0.1",
+    "description": "Thin wrapper around the Azure OpenAI Chat Completions API + Function Calling to emulate the missing Assistants API",
     "main": "dist/index.js",
-    "types": "types/index.d.ts",
-    "unpkg": "dist/index.umd.js",
     "module": "dist/index.esm.js",
-    "jsdelivr": "dist/index.umd.js",
-    "umd:main": "dist/index.umd.js",
+    "types": "types/index.d.ts",
     "files": [
         "dist/",
         "types/"
     ],
+    "type": "commonjs",
     "exports": {
         ".": [
             {
@@ -51,11 +48,12 @@
     },
     "scripts": {
         "doc": "typedoc src/index.ts",
-        "test": "jest",
+        "test": "jest --passWithNoTests",
         "lint": "eslint \"*/**/*.{ts,js,json}\"",
         "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
         "build": "rollup --config ./rollup.config.mjs",
-        "prepublishOnly": "npm run doc && npm run lint && npm run test && npm run build"
+        "prepublishOnly": "npm run doc && npm run lint && npm run test && npm run build",
+        "examples:insurance": "ts-node-dev examples/insurance/index.ts"
     },
     "repository": {
         "type": "git",

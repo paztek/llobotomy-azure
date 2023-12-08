@@ -1,18 +1,17 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    // Transpilation settings.
-    "module": "ES2022",
-    "target": "ES5",
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        // Transpilation settings.
+        "module": "ES2022",
 
-    // Output settings.
-    "newLine": "LF",
-    "sourceMap": true,
+        // Output settings.
+        "newLine": "CRLF",
+        "sourceMap": true,
 
-    // Type declaration settings.
-    "declaration": true,
-    "declarationDir": "types/",
-    "declarationMap": true
-  },
-  "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx"]
+        // Type declaration settings.
+        "declaration": true,
+        "declarationDir": "types/",
+        "declarationMap": true
+    },
+    "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx"]
 }
