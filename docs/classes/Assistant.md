@@ -17,7 +17,7 @@
 
 ### Methods
 
-- [getChatCompletions](Assistant.md#getchatcompletions)
+- [listChatCompletions](Assistant.md#listchatcompletions)
 
 ## Constructors
 
@@ -33,7 +33,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L20)
+[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L20)
 
 ## Properties
 
@@ -43,7 +43,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L14)
+[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L14)
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L18)
+[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L18)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L17)
+[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L17)
 
 ___
 
@@ -73,13 +73,13 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:16](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L16)
+[src/assistant/assistant.ts:16](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L16)
 
 ## Methods
 
-### getChatCompletions
+### listChatCompletions
 
-▸ **getChatCompletions**(`messages`): `Promise`<`ChatCompletions`\>
+▸ **listChatCompletions**(`messages`): `Readable`
 
 #### Parameters
 
@@ -89,8 +89,8 @@ ___
 
 #### Returns
 
-`Promise`<`ChatCompletions`\>
+`Readable`
 
 #### Defined in
 
-[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/assistant.ts#L27)
+[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/assistant.ts#L27)

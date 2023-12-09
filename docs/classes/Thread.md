@@ -16,20 +16,28 @@
 
 ### Properties
 
+- [\_stream](Thread.md#_stream)
 - [messages](Thread.md#messages)
 - [captureRejectionSymbol](Thread.md#capturerejectionsymbol)
 - [captureRejections](Thread.md#capturerejections)
 - [defaultMaxListeners](Thread.md#defaultmaxlisteners)
 - [errorMonitor](Thread.md#errormonitor)
 
+### Accessors
+
+- [stream](Thread.md#stream)
+
 ### Methods
 
 - [[captureRejectionSymbol]](Thread.md#[capturerejectionsymbol])
 - [addListener](Thread.md#addlistener)
+- [addMessage](Thread.md#addmessage)
 - [doRun](Thread.md#dorun)
 - [emit](Thread.md#emit)
 - [eventNames](Thread.md#eventnames)
 - [getMaxListeners](Thread.md#getmaxlisteners)
+- [handleStreamAsChatMessage](Thread.md#handlestreamaschatmessage)
+- [handleStreamAsFunctionCall](Thread.md#handlestreamasfunctioncall)
 - [listenerCount](Thread.md#listenercount)
 - [listeners](Thread.md#listeners)
 - [off](Thread.md#off)
@@ -37,10 +45,10 @@
 - [once](Thread.md#once)
 - [prependListener](Thread.md#prependlistener)
 - [prependOnceListener](Thread.md#prependoncelistener)
-- [query](Thread.md#query)
 - [rawListeners](Thread.md#rawlisteners)
 - [removeAllListeners](Thread.md#removealllisteners)
 - [removeListener](Thread.md#removelistener)
+- [run](Thread.md#run)
 - [setMaxListeners](Thread.md#setmaxlisteners)
 - [addAbortListener](Thread.md#addabortlistener)
 - [getEventListeners](Thread.md#geteventlisteners)
@@ -54,7 +62,13 @@
 
 ### constructor
 
-• **new Thread**()
+• **new Thread**(`messages?`)
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `messages` | `ChatMessage`[] | `[]` |
 
 #### Overrides
 
@@ -62,17 +76,27 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:8](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/thread/thread.ts#L8)
+[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L9)
 
 ## Properties
 
-### messages
+### \_stream
 
-• **messages**: `ChatMessage`[] = `[]`
+• `Private` **\_stream**: `PassThrough`
 
 #### Defined in
 
-[src/thread/thread.ts:6](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/thread/thread.ts#L6)
+[src/thread/thread.ts:7](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L7)
+
+___
+
+### messages
+
+• `Private` `Readonly` **messages**: `ChatMessage`[] = `[]`
+
+#### Defined in
+
+[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L9)
 
 ___
 
@@ -193,6 +217,20 @@ EventEmitter.errorMonitor
 
 node_modules/@types/node/events.d.ts:395
 
+## Accessors
+
+### stream
+
+• `get` **stream**(): `Readable`
+
+#### Returns
+
+`Readable`
+
+#### Defined in
+
+[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L13)
+
 ## Methods
 
 ### [captureRejectionSymbol]
@@ -252,9 +290,29 @@ node_modules/@types/node/events.d.ts:545
 
 ___
 
+### addMessage
+
+▸ **addMessage**(`message`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `message` | `ChatMessage` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:17](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L17)
+
+___
+
 ### doRun
 
-▸ `Private` **doRun**(`assistant`): `Promise`<`void`\>
+▸ `Private` **doRun**(`assistant`): `void`
 
 #### Parameters
 
@@ -264,11 +322,11 @@ ___
 
 #### Returns
 
-`Promise`<`void`\>
+`void`
 
 #### Defined in
 
-[src/thread/thread.ts:23](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/thread/thread.ts#L23)
+[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L26)
 
 ___
 
@@ -400,6 +458,82 @@ EventEmitter.getMaxListeners
 #### Defined in
 
 node_modules/@types/node/events.d.ts:722
+
+___
+
+### handleStreamAsChatMessage
+
+▸ `Private` **handleStreamAsChatMessage**(`stream`): `void`
+
+Handles the stream as a chat message after we determined from the beginning of the stream that it is a chat message.
+The stream emits some completions.
+The first choice of these completions successively looks like this:
+{
+  index: 0,
+  finishReason: null,
+  delta: { content: "Lorem" }, <---- beginning of the response
+  contentFilterResults: {}
+}
+... <---- more completions
+{
+  index: 0,
+  finishReason: null,
+  delta: { content: " ipsum" } <---- end of the response
+}
+{ index: 0, finishReason: 'stop', delta: {} } <---- end of the message
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `stream` | `Readable` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:170](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L170)
+
+___
+
+### handleStreamAsFunctionCall
+
+▸ `Private` **handleStreamAsFunctionCall**(`name`, `stream`, `assistant`): `void`
+
+Handles the stream as a function call after we determined from the beginning of the stream that it is a function call.
+The stream emits some completions.
+The first choice of these completions successively looks like this:
+{
+  index: 0,
+  finishReason: null,
+  delta: { functionCall: { name: undefined, arguments: '{"' } }, <---- beginning of the arguments as a stringified JSON
+  contentFilterResults: {}
+}
+... <---- more completions
+{
+  index: 0,
+  finishReason: null,
+  delta: { functionCall: { name: undefined, arguments: '"}' } } <---- end of the arguments as a stringified JSON
+}
+{ index: 0, finishReason: 'function_call', delta: {} } <---- end of the function call
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `name` | `string` |
+| `stream` | `Readable` |
+| `assistant` | [`Assistant`](Assistant.md) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:92](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L92)
 
 ___
 
@@ -697,27 +831,6 @@ node_modules/@types/node/events.d.ts:850
 
 ___
 
-### query
-
-▸ **query**(`text`, `assistant`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `text` | `string` |
-| `assistant` | [`Assistant`](Assistant.md) |
-
-#### Returns
-
-`Promise`<`void`\>
-
-#### Defined in
-
-[src/thread/thread.ts:12](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/thread/thread.ts#L12)
-
-___
-
 ### rawListeners
 
 ▸ **rawListeners**(`eventName`): `Function`[]
@@ -916,6 +1029,26 @@ EventEmitter.removeListener
 #### Defined in
 
 node_modules/@types/node/events.d.ts:690
+
+___
+
+### run
+
+▸ **run**(`assistant`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `assistant` | [`Assistant`](Assistant.md) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L22)
 
 ___
 

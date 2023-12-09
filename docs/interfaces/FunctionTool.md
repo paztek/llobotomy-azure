@@ -27,7 +27,7 @@
 
 #### Defined in
 
-[src/assistant/function-tool.ts:7](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/function-tool.ts#L7)
+[src/assistant/function-tool.ts:7](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/function-tool.ts#L7)
 
 ## Methods
 
@@ -47,4 +47,4 @@
 
 #### Defined in
 
-[src/assistant/function-tool.ts:8](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/assistant/function-tool.ts#L8)
+[src/assistant/function-tool.ts:8](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/assistant/function-tool.ts#L8)

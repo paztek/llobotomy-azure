@@ -16,4 +16,4 @@
 
 #### Defined in
 
-[src/thread/thread.ts:82](https://github.com/paztek/llobotomy-azure/blob/1acaa38/src/thread/thread.ts#L82)
+[src/thread/thread.ts:227](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L227)

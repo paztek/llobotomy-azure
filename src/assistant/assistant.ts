@@ -1,7 +1,7 @@
-import type { ChatCompletions, OpenAIClient } from '@azure/openai';
-import type { FunctionDefinition } from '@azure/openai';
+import type { FunctionDefinition, OpenAIClient } from '@azure/openai';
 import type { GetChatCompletionsOptions } from '@azure/openai/types/src/api/models';
 import type { ChatMessage } from '@azure/openai/types/src/models/models';
+import { Readable } from 'stream';
 
 export interface AssistantCreateParams {
     client: OpenAIClient;
@@ -24,7 +24,7 @@ export class Assistant {
         this.deployment = params.deployment;
     }
 
-    getChatCompletions(messages: ChatMessage[]): Promise<ChatCompletions> {
+    listChatCompletions(messages: ChatMessage[]): Readable {
         // Prepend the messages with our instructions as a "system" message
         const systemMessage: ChatMessage = {
             role: 'system',
@@ -36,10 +36,14 @@ export class Assistant {
             functions: this.functions,
         };
 
-        return this.client.getChatCompletions(
+        const completions = this.client.listChatCompletions(
             this.deployment,
             messages,
             options,
         );
+
+        return Readable.from(completions, {
+            objectMode: true,
+        });
     }
 }
