@@ -1,4 +1,10 @@
-import type { ChatChoice, ChatCompletions, ChatMessage } from '@azure/openai';
+import type {
+    ChatChoice,
+    ChatCompletions,
+    ChatRequestMessage,
+    ChatRequestUserMessage,
+    ChatResponseMessage,
+} from '@azure/openai';
 import { mock } from 'jest-mock-extended';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
@@ -21,14 +27,15 @@ describe('Thread', () => {
     });
 
     describe('addMessage', () => {
-        const message: ChatMessage = {
+        const message: ChatRequestUserMessage = {
             role: 'user',
             content: 'Hello',
         };
 
-        it('emits a "message" event', () => {
+        it('emits a "message" and a "message:request" events', () => {
             thread.addMessage(message);
-            expect(emitSpy).toHaveBeenCalledWith('message', message);
+            expect(emitSpy).nthCalledWith(1, 'message', message);
+            expect(emitSpy).nthCalledWith(2, 'message:request', message);
         });
     });
 
@@ -42,7 +49,7 @@ describe('Thread', () => {
             expect(emitSpy).toHaveBeenCalledWith('in_progress');
         });
 
-        describe('when the completions from the assistant are a function call', () => {
+        describe('when the completions from the assistant are some tool calls', () => {
             const functionName = 'get_customer_profile';
 
             beforeEach(() => {
@@ -52,56 +59,76 @@ describe('Thread', () => {
                         finishReason: null,
                         delta: {
                             role: 'assistant',
-                            functionCall: {
-                                name: functionName,
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                arguments: undefined,
-                            },
+                            toolCalls: [
+                                {
+                                    id: 'tool-call-1234abc',
+                                    type: 'function',
+                                    function: {
+                                        name: functionName,
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        arguments: undefined,
+                                    },
+                                },
+                            ],
                         },
                     },
                     {
                         index: 0,
                         finishReason: null,
                         delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: '{"',
-                            },
+                            toolCalls: [
+                                {
+                                    function: {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        name: undefined,
+                                        arguments: '{"',
+                                    },
+                                },
+                            ],
                         },
                     },
                     {
                         index: 0,
                         finishReason: null,
                         delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: 'id":"',
-                            },
+                            toolCalls: [
+                                {
+                                    function: {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        name: undefined,
+                                        arguments: 'id":"',
+                                    },
+                                },
+                            ],
                         },
                     },
                     {
                         index: 0,
                         finishReason: null,
                         delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: 'ABC"}',
-                            },
+                            toolCalls: [
+                                {
+                                    function: {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        name: undefined,
+                                        arguments: 'ABC"}',
+                                    },
+                                },
+                            ],
                         },
                     },
                     {
                         index: 0,
-                        finishReason: 'function_call',
+                        finishReason: 'tool_calls',
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
-                        delta: {},
+                        delta: {
+                            toolCalls: [],
+                        },
                     },
                 ];
                 const completions: ChatCompletions[] = choices.map(
@@ -109,6 +136,7 @@ describe('Thread', () => {
                         id: 'chat-cmpl-1234abc',
                         created: new Date(),
                         choices: [choice],
+                        promptFilterResults: [],
                     }),
                 );
 
@@ -119,14 +147,14 @@ describe('Thread', () => {
                 );
             });
 
-            it('emits a "message" event from the assistant, with the function call parameters', async () => {
+            it('emits a "message" event from the assistant, with the tool calls parameters', async () => {
                 thread.run(assistant);
 
                 // The "message" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
                     thread.on('error', reject);
                     thread.on('message', (message) => {
-                        if (isFunctionCallMessage(message)) {
+                        if (isChatResponseAssistantToolCallsMessage(message)) {
                             resolve();
                         }
                     });
@@ -135,12 +163,18 @@ describe('Thread', () => {
                 expect(emitSpy).nthCalledWith(2, 'message', {
                     role: 'assistant',
                     content: null,
-                    functionCall: {
-                        name: functionName,
-                        arguments: JSON.stringify({
-                            id: 'ABC',
-                        }),
-                    },
+                    toolCalls: [
+                        {
+                            id: 'tool-call-1234abc',
+                            type: 'function',
+                            function: {
+                                name: functionName,
+                                arguments: JSON.stringify({
+                                    id: 'ABC',
+                                }),
+                            },
+                        },
+                    ],
                 });
             });
 
@@ -154,18 +188,22 @@ describe('Thread', () => {
                 });
 
                 expect(emitSpy).nthCalledWith(
-                    3,
+                    4,
                     'requires_action',
                     expect.any(RequiredAction),
                 );
 
                 const requiredAction = emitSpy.mock
                     .calls[2][1] as RequiredAction;
-                expect(requiredAction.toolCall).toBeDefined();
-                expect(requiredAction.toolCall.name).toEqual(functionName);
-                expect(requiredAction.toolCall.arguments).toEqual({
-                    id: 'ABC',
-                });
+                expect(requiredAction.toolCalls).toBeDefined();
+                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
+                    functionName,
+                );
+                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
+                    JSON.stringify({
+                        id: 'ABC',
+                    }),
+                );
             });
         });
 
@@ -179,6 +217,7 @@ describe('Thread', () => {
                         // @ts-ignore
                         delta: {
                             role: 'assistant',
+                            toolCalls: [],
                         },
                     },
                     {
@@ -188,6 +227,7 @@ describe('Thread', () => {
                         // @ts-ignore
                         delta: {
                             content: 'Lorem ipsum',
+                            toolCalls: [],
                         },
                     },
                     {
@@ -197,6 +237,7 @@ describe('Thread', () => {
                         // @ts-ignore
                         delta: {
                             content: ' dolor sit',
+                            toolCalls: [],
                         },
                     },
                     {
@@ -206,6 +247,7 @@ describe('Thread', () => {
                         // @ts-ignore
                         delta: {
                             content: ' amet',
+                            toolCalls: [],
                         },
                     },
                     {
@@ -221,6 +263,7 @@ describe('Thread', () => {
                         id: 'chat-cmpl-1234abc',
                         created: new Date(),
                         choices: [choice],
+                        promptFilterResults: [],
                     }),
                 );
 
@@ -238,7 +281,7 @@ describe('Thread', () => {
                 await new Promise<void>((resolve, reject) => {
                     thread.on('error', reject);
                     thread.on('message', (message) => {
-                        if (isTextMessage(message)) {
+                        if (isChatResponseAssistantContentMessage(message)) {
                             resolve();
                         }
                     });
@@ -247,6 +290,7 @@ describe('Thread', () => {
                 expect(emitSpy).nthCalledWith(2, 'message', {
                     role: 'assistant',
                     content: 'Lorem ipsum dolor sit amet',
+                    toolCalls: [],
                 });
             });
 
@@ -259,7 +303,7 @@ describe('Thread', () => {
                     thread.on('completed', resolve);
                 });
 
-                expect(emitSpy).nthCalledWith(3, 'completed');
+                expect(emitSpy).nthCalledWith(4, 'completed');
             });
 
             it('also writes to the stream of the thread', async () => {
@@ -289,12 +333,16 @@ async function* createAsyncIterable<T>(items: T[]): AsyncIterable<T> {
     }
 }
 
-function isFunctionCallMessage(message: ChatMessage): boolean {
-    return (
-        message.role === 'assistant' && message.functionCall?.name !== undefined
-    );
+function isChatResponseAssistantContentMessage(
+    m: ChatRequestMessage | ChatResponseMessage,
+): m is ChatResponseMessage {
+    return m.role === 'assistant' && m.content !== null;
 }
 
-function isTextMessage(message: ChatMessage): boolean {
-    return message.role === 'assistant' && message.functionCall === undefined;
+function isChatResponseAssistantToolCallsMessage(
+    m: ChatRequestMessage | ChatResponseMessage,
+): m is ChatResponseMessage {
+    return (
+        m.role === 'assistant' && 'toolCalls' in m && m.toolCalls?.length > 0
+    );
 }

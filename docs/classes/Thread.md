@@ -32,12 +32,14 @@
 - [[captureRejectionSymbol]](Thread.md#[capturerejectionsymbol])
 - [addListener](Thread.md#addlistener)
 - [addMessage](Thread.md#addmessage)
+- [doAddMessage](Thread.md#doaddmessage)
 - [doRun](Thread.md#dorun)
 - [emit](Thread.md#emit)
 - [eventNames](Thread.md#eventnames)
 - [getMaxListeners](Thread.md#getmaxlisteners)
-- [handleStreamAsChatMessage](Thread.md#handlestreamaschatmessage)
-- [handleStreamAsFunctionCall](Thread.md#handlestreamasfunctioncall)
+- [getRequestMessages](Thread.md#getrequestmessages)
+- [handleStreamAsChatResponseMessage](Thread.md#handlestreamaschatresponsemessage)
+- [handleStreamAsToolCalls](Thread.md#handlestreamastoolcalls)
 - [listenerCount](Thread.md#listenercount)
 - [listeners](Thread.md#listeners)
 - [off](Thread.md#off)
@@ -68,7 +70,7 @@
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `messages` | `ChatMessage`[] | `[]` |
+| `messages` | `ChatRequestMessage`[] | `[]` |
 
 #### Overrides
 
@@ -76,7 +78,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L9)
+[src/thread/thread.ts:17](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L17)
 
 ## Properties
 
@@ -86,17 +88,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:7](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L7)
+[src/thread/thread.ts:15](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L15)
 
 ___
 
 ### messages
 
-• `Private` `Readonly` **messages**: `ChatMessage`[] = `[]`
+• `Private` `Readonly` **messages**: (`ChatRequestMessage` \| `ChatResponseMessage`)[] = `[]`
 
 #### Defined in
 
-[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L9)
+[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L13)
 
 ___
 
@@ -229,7 +231,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L13)
+[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L22)
 
 ## Methods
 
@@ -298,7 +300,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `message` | `ChatMessage` |
+| `message` | `ChatRequestMessage` |
 
 #### Returns
 
@@ -306,7 +308,27 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L21)
+[src/thread/thread.ts:30](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L30)
+
+___
+
+### doAddMessage
+
+▸ `Private` **doAddMessage**(`message`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `message` | `ChatRequestMessage` \| `ChatResponseMessage` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:250](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L250)
 
 ___
 
@@ -326,7 +348,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L33)
+[src/thread/thread.ts:41](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L41)
 
 ___
 
@@ -461,9 +483,26 @@ node_modules/@types/node/events.d.ts:722
 
 ___
 
-### handleStreamAsChatMessage
+### getRequestMessages
 
-▸ `Private` **handleStreamAsChatMessage**(`stream`): `void`
+▸ `Private` **getRequestMessages**(): `ChatRequestMessage`[]
+
+Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
+so they can be sent again to the LLM.
+
+#### Returns
+
+`ChatRequestMessage`[]
+
+#### Defined in
+
+[src/thread/thread.ts:98](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L98)
+
+___
+
+### handleStreamAsChatResponseMessage
+
+▸ `Private` **handleStreamAsChatResponseMessage**(`stream`): `void`
 
 Handles the stream as a chat message after we determined from the beginning of the stream that it is a chat message.
 The stream emits some completions.
@@ -494,13 +533,13 @@ The first choice of these completions successively looks like this:
 
 #### Defined in
 
-[src/thread/thread.ts:177](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L177)
+[src/thread/thread.ts:212](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L212)
 
 ___
 
-### handleStreamAsFunctionCall
+### handleStreamAsToolCalls
 
-▸ `Private` **handleStreamAsFunctionCall**(`name`, `stream`, `assistant`): `void`
+▸ `Private` **handleStreamAsToolCalls**(`toolCalls`, `stream`, `assistant`): `void`
 
 Handles the stream as a function call after we determined from the beginning of the stream that it is a function call.
 The stream emits some completions.
@@ -523,7 +562,7 @@ The first choice of these completions successively looks like this:
 
 | Name | Type |
 | :------ | :------ |
-| `name` | `string` |
+| `toolCalls` | `ChatCompletionsFunctionToolCall`[] |
 | `stream` | `Readable` |
 | `assistant` | [`Assistant`](Assistant.md) |
 
@@ -533,7 +572,7 @@ The first choice of these completions successively looks like this:
 
 #### Defined in
 
-[src/thread/thread.ts:99](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L99)
+[src/thread/thread.ts:133](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L133)
 
 ___
 
@@ -1048,7 +1087,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L26)
+[src/thread/thread.ts:34](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L34)
 
 ___
 

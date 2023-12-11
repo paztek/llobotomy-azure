@@ -32,3 +32,6 @@ pnpmfile.js
 # env files
 .env
 !.env.example
+
+# Sensible example
+examples/insurance

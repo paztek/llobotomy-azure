@@ -16,7 +16,7 @@
 
 ### Properties
 
-- [toolCall](RequiredAction.md#toolcall)
+- [toolCalls](RequiredAction.md#toolcalls)
 - [captureRejectionSymbol](RequiredAction.md#capturerejectionsymbol)
 - [captureRejections](RequiredAction.md#capturerejections)
 - [defaultMaxListeners](RequiredAction.md#defaultmaxlisteners)
@@ -40,7 +40,7 @@
 - [removeAllListeners](RequiredAction.md#removealllisteners)
 - [removeListener](RequiredAction.md#removelistener)
 - [setMaxListeners](RequiredAction.md#setmaxlisteners)
-- [submitToolOutput](RequiredAction.md#submittooloutput)
+- [submitToolOutputs](RequiredAction.md#submittooloutputs)
 - [addAbortListener](RequiredAction.md#addabortlistener)
 - [getEventListeners](RequiredAction.md#geteventlisteners)
 - [getMaxListeners](RequiredAction.md#getmaxlisteners-1)
@@ -53,13 +53,13 @@
 
 ### constructor
 
-• **new RequiredAction**(`functionCall`)
+• **new RequiredAction**(`toolCalls`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `functionCall` | `FunctionCall` |
+| `toolCalls` | `ChatCompletionsFunctionToolCall`[] |
 
 #### Overrides
 
@@ -67,17 +67,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:218](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L218)
+[src/thread/thread.ts:265](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L265)
 
 ## Properties
 
-### toolCall
+### toolCalls
 
-• **toolCall**: [`ToolCall`](../interfaces/ToolCall.md)
+• `Readonly` **toolCalls**: `ChatCompletionsFunctionToolCall`[]
 
 #### Defined in
 
-[src/thread/thread.ts:216](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L216)
+[src/thread/thread.ts:265](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L265)
 
 ___
 
@@ -918,15 +918,15 @@ node_modules/@types/node/events.d.ts:716
 
 ___
 
-### submitToolOutput
+### submitToolOutputs
 
-▸ **submitToolOutput**(`toolOutput`): `void`
+▸ **submitToolOutputs**(`toolOutputs`): `void`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `toolOutput` | [`ToolOutput`](../interfaces/ToolOutput.md) |
+| `toolOutputs` | [`ToolOutput`](../interfaces/ToolOutput.md)[] |
 
 #### Returns
 
@@ -934,7 +934,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:227](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L227)
+[src/thread/thread.ts:269](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L269)
 
 ___
 

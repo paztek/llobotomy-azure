@@ -1,13 +1,22 @@
-import type { ChatCompletions, ChatMessage, FunctionCall } from '@azure/openai';
+import type {
+    ChatCompletions,
+    ChatCompletionsToolCall,
+    ChatRequestMessage,
+    ChatRequestToolMessage,
+    ChatResponseMessage,
+} from '@azure/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 
 export class Thread extends EventEmitter {
+    private readonly messages: (ChatRequestMessage | ChatResponseMessage)[] =
+        [];
     private _stream: Readable | null = null;
 
-    constructor(private readonly messages: ChatMessage[] = []) {
+    constructor(messages: ChatRequestMessage[] = []) {
         super();
+        this.messages = messages;
     }
 
     get stream(): Readable | null {
@@ -18,9 +27,8 @@ export class Thread extends EventEmitter {
         return this._stream;
     }
 
-    addMessage(message: ChatMessage): void {
-        this.messages.push(message);
-        this.emit('message', message);
+    addMessage(message: ChatRequestMessage): void {
+        this.doAddMessage(message);
     }
 
     run(assistant: Assistant): void {
@@ -33,7 +41,9 @@ export class Thread extends EventEmitter {
     private doRun(assistant: Assistant): void {
         this.emit('in_progress');
 
-        const stream = assistant.listChatCompletions(this.messages);
+        const messages = this.getRequestMessages();
+
+        const stream = assistant.listChatCompletions(messages);
 
         /**
          * When the LLM responds with a function call, the first completion's first choice looks like this:
@@ -69,11 +79,35 @@ export class Thread extends EventEmitter {
                 throw new Error('No delta returned');
             }
 
-            if (delta.functionCall) {
-                const name = delta.functionCall.name;
-                this.handleStreamAsFunctionCall(name, stream, assistant);
+            if (delta.toolCalls.length > 0) {
+                this.handleStreamAsToolCalls(
+                    delta.toolCalls,
+                    stream,
+                    assistant,
+                );
             } else {
-                this.handleStreamAsChatMessage(stream);
+                this.handleStreamAsChatResponseMessage(stream);
+            }
+        });
+    }
+
+    /**
+     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
+     * so they can be sent again to the LLM.
+     */
+    private getRequestMessages(): ChatRequestMessage[] {
+        return this.messages.map((m) => {
+            if (m.role === 'system' || m.role === 'user' || m.role === 'tool') {
+                // These are messages from the application (a.k.a request messages)
+                return m as ChatRequestMessage;
+            } else {
+                // These are messages from the assistant (a.k.a response messages)
+                const responseMessage = m as ChatResponseMessage;
+                return {
+                    role: 'assistant',
+                    content: responseMessage.content,
+                    toolCalls: responseMessage.toolCalls,
+                };
             }
         });
     }
@@ -96,12 +130,12 @@ export class Thread extends EventEmitter {
      * }
      * { index: 0, finishReason: 'function_call', delta: {} } <---- end of the function call
      */
-    private handleStreamAsFunctionCall(
-        name: string,
+    private handleStreamAsToolCalls(
+        toolCalls: ChatCompletionsToolCall[],
         stream: Readable,
         assistant: Assistant,
     ): void {
-        let args = '';
+        const argsList = Array(toolCalls.length).fill('');
 
         stream.on('data', (completions: ChatCompletions) => {
             const choice = completions.choices[0];
@@ -113,40 +147,41 @@ export class Thread extends EventEmitter {
                 throw new Error('No delta returned');
             }
 
-            if (delta.functionCall) {
-                const functionCall = delta.functionCall;
-                if (functionCall.arguments) {
-                    args += functionCall.arguments;
-                }
-            }
+            delta.toolCalls.forEach((toolCall, index) => {
+                argsList[index] += toolCall.function.arguments;
+            });
 
-            if (choice.finishReason === 'function_call') {
-                const functionCall: FunctionCall = {
-                    name,
-                    arguments: args,
-                };
+            if (choice.finishReason === 'tool_calls') {
+                const finalToolCalls: ChatCompletionsToolCall[] = toolCalls.map(
+                    (toolCall, index) => ({
+                        ...toolCall,
+                        function: {
+                            ...toolCall.function,
+                            arguments: argsList[index],
+                        },
+                    }),
+                );
 
                 // Adds the assistant's response to the messages
-                const message: ChatMessage = {
+                const message: ChatResponseMessage = {
                     role: 'assistant',
                     content: null,
-                    functionCall,
+                    toolCalls: finalToolCalls,
                 };
-                this.addMessage(message);
+                this.doAddMessage(message);
 
-                const requiredAction = new RequiredAction({
-                    name,
-                    arguments: args,
-                });
+                const requiredAction = new RequiredAction(finalToolCalls);
 
-                requiredAction.on('submitting', (toolOutput: ToolOutput) => {
-                    // Adds the tool output to the messages
-                    const message: ChatMessage = {
-                        role: 'function',
-                        name: functionCall.name,
-                        content: JSON.stringify(toolOutput),
-                    };
-                    this.addMessage(message);
+                requiredAction.on('submitting', (toolOutputs: ToolOutput[]) => {
+                    // Adds the tool outputs to the messages
+                    for (const toolOutput of toolOutputs) {
+                        const message: ChatRequestToolMessage = {
+                            role: 'tool',
+                            content: JSON.stringify(toolOutput.value),
+                            toolCallId: toolOutput.callId,
+                        };
+                        this.doAddMessage(message);
+                    }
 
                     this.doRun(assistant);
                 });
@@ -174,7 +209,7 @@ export class Thread extends EventEmitter {
      * }
      * { index: 0, finishReason: 'stop', delta: {} } <---- end of the message
      */
-    private handleStreamAsChatMessage(stream: Readable): void {
+    private handleStreamAsChatResponseMessage(stream: Readable): void {
         let content = '';
 
         stream.on('data', (completions: ChatCompletions) => {
@@ -199,33 +234,40 @@ export class Thread extends EventEmitter {
 
             if (choice.finishReason === 'stop') {
                 // Adds the assistant's response to the messages
-                const message: ChatMessage = {
+                const message: ChatResponseMessage = {
                     role: 'assistant',
                     content,
+                    toolCalls: [],
                 };
-                this.addMessage(message);
+                this.doAddMessage(message);
 
                 this.emit('completed');
                 this._stream?.push(null);
             }
         });
     }
+
+    private doAddMessage(
+        message: ChatRequestMessage | ChatResponseMessage,
+    ): void {
+        this.messages.push(message);
+        this.emit('message', message);
+
+        if (isChatRequestMessage(message)) {
+            this.emit('message:request', message);
+        } else {
+            this.emit('message:response', message);
+        }
+    }
 }
 
 export class RequiredAction extends EventEmitter {
-    toolCall: ToolCall;
-
-    constructor(functionCall: FunctionCall) {
+    constructor(public readonly toolCalls: ChatCompletionsToolCall[]) {
         super();
-
-        this.toolCall = {
-            name: functionCall.name,
-            arguments: JSON.parse(functionCall.arguments),
-        };
     }
 
-    submitToolOutput(toolOutput: ToolOutput): void {
-        this.emit('submitting', toolOutput);
+    submitToolOutputs(toolOutputs: ToolOutput[]): void {
+        this.emit('submitting', toolOutputs);
     }
 }
 
@@ -235,5 +277,18 @@ export interface ToolCall {
 }
 
 export interface ToolOutput {
+    callId: string;
     value: unknown;
+}
+
+export function isChatResponseMessage(
+    m: ChatRequestMessage | ChatResponseMessage,
+): m is ChatResponseMessage {
+    return 'toolCalls' in m;
+}
+
+export function isChatRequestMessage(
+    m: ChatRequestMessage | ChatResponseMessage,
+): m is ChatRequestMessage {
+    return !isChatResponseMessage(m);
 }

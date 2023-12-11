@@ -8,8 +8,8 @@
 
 - [client](AssistantCreateParams.md#client)
 - [deployment](AssistantCreateParams.md#deployment)
-- [functions](AssistantCreateParams.md#functions)
 - [instructions](AssistantCreateParams.md#instructions)
+- [tools](AssistantCreateParams.md#tools)
 
 ## Properties
 
@@ -19,7 +19,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:7](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/assistant/assistant.ts#L7)
+[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L11)
 
 ___
 
@@ -29,17 +29,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:10](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/assistant/assistant.ts#L10)
-
-___
-
-### functions
-
-• **functions**: `FunctionDefinition`[]
-
-#### Defined in
-
-[src/assistant/assistant.ts:9](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/assistant/assistant.ts#L9)
+[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L14)
 
 ___
 
@@ -49,4 +39,14 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:8](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/assistant/assistant.ts#L8)
+[src/assistant/assistant.ts:12](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L12)
+
+___
+
+### tools
+
+• **tools**: `ChatCompletionsFunctionToolDefinition`[]
+
+#### Defined in
+
+[src/assistant/assistant.ts:13](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L13)

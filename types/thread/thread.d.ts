@@ -1,17 +1,22 @@
 /// <reference types="node" />
 /// <reference types="node" />
-import type { ChatMessage, FunctionCall } from '@azure/openai';
+import type { ChatCompletionsToolCall, ChatRequestMessage, ChatResponseMessage } from '@azure/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
-    constructor(messages?: ChatMessage[]);
+    constructor(messages?: ChatRequestMessage[]);
     get stream(): Readable | null;
-    addMessage(message: ChatMessage): void;
+    addMessage(message: ChatRequestMessage): void;
     run(assistant: Assistant): void;
     private doRun;
+    /**
+     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
+     * so they can be sent again to the LLM.
+     */
+    private getRequestMessages;
     /**
      * Handles the stream as a function call after we determined from the beginning of the stream that it is a function call.
      * The stream emits some completions.
@@ -30,7 +35,7 @@ export declare class Thread extends EventEmitter {
      * }
      * { index: 0, finishReason: 'function_call', delta: {} } <---- end of the function call
      */
-    private handleStreamAsFunctionCall;
+    private handleStreamAsToolCalls;
     /**
      * Handles the stream as a chat message after we determined from the beginning of the stream that it is a chat message.
      * The stream emits some completions.
@@ -49,18 +54,22 @@ export declare class Thread extends EventEmitter {
      * }
      * { index: 0, finishReason: 'stop', delta: {} } <---- end of the message
      */
-    private handleStreamAsChatMessage;
+    private handleStreamAsChatResponseMessage;
+    private doAddMessage;
 }
 export declare class RequiredAction extends EventEmitter {
-    toolCall: ToolCall;
-    constructor(functionCall: FunctionCall);
-    submitToolOutput(toolOutput: ToolOutput): void;
+    readonly toolCalls: ChatCompletionsToolCall[];
+    constructor(toolCalls: ChatCompletionsToolCall[]);
+    submitToolOutputs(toolOutputs: ToolOutput[]): void;
 }
 export interface ToolCall {
     name: string;
     arguments: Record<string, unknown>;
 }
 export interface ToolOutput {
+    callId: string;
     value: unknown;
 }
+export declare function isChatResponseMessage(m: ChatRequestMessage | ChatResponseMessage): m is ChatResponseMessage;
+export declare function isChatRequestMessage(m: ChatRequestMessage | ChatResponseMessage): m is ChatRequestMessage;
 //# sourceMappingURL=thread.d.ts.map

@@ -52,6 +52,7 @@
         "lint": "eslint \"*/**/*.{ts,js,json}\"",
         "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
         "build": "rollup --config ./rollup.config.mjs",
+        "build:watch": "rollup --config ./rollup.config.mjs --watch",
         "prepublishOnly": "npm run doc && npm run lint && npm run test && npm run build",
         "examples:insurance": "ts-node-dev examples/insurance/index.ts"
     },
@@ -69,6 +70,6 @@
     },
     "homepage": "https://github.com/paztek/llobotomy-azure#readme",
     "dependencies": {
-        "@azure/openai": "^1.0.0-beta.7"
+        "@azure/openai": "^1.0.0-beta.8"
     }
 }
