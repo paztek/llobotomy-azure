@@ -264,11 +264,12 @@ describe('Thread', () => {
 
             it('also writes to the stream of the thread', async () => {
                 let response = '';
-                thread.stream.on('data', (data) => {
-                    response += data;
-                });
 
                 thread.run(assistant);
+
+                thread.stream?.on('data', (data) => {
+                    response += data;
+                });
 
                 // The "completed" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {

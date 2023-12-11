@@ -2,13 +2,13 @@
 /// <reference types="node" />
 import type { ChatMessage, FunctionCall } from '@azure/openai';
 import EventEmitter from 'events';
-import { type Readable } from 'stream';
+import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
     constructor(messages?: ChatMessage[]);
-    get stream(): Readable;
+    get stream(): Readable | null;
     addMessage(message: ChatMessage): void;
     run(assistant: Assistant): void;
     private doRun;

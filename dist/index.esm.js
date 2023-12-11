@@ -1,10 +1,10 @@
 /*!
- * llobotomy-azure v0.0.1
+ * llobotomy-azure v0.0.2
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
 
-import { Readable, PassThrough } from 'stream';
+import { Readable } from 'stream';
 import EventEmitter from 'events';
 
 class Assistant {
@@ -35,9 +35,12 @@ class Thread extends EventEmitter {
     constructor(messages = []) {
         super();
         this.messages = messages;
-        this._stream = new PassThrough();
+        this._stream = null;
     }
     get stream() {
+        if (!this._stream) {
+            return null;
+        }
         return this._stream;
     }
     addMessage(message) {
@@ -45,6 +48,9 @@ class Thread extends EventEmitter {
         this.emit('message', message);
     }
     run(assistant) {
+        this._stream = new Readable({
+            read: () => { },
+        });
         this.doRun(assistant);
     }
     doRun(assistant) {
@@ -188,7 +194,10 @@ class Thread extends EventEmitter {
             if (delta.content) {
                 content += delta.content;
                 // Write also to the stream of the thread
-                this._stream.write(delta.content);
+                if (!this._stream) {
+                    throw new Error('No stream available');
+                }
+                this._stream?.push(delta.content);
             }
             if (choice.finishReason === 'stop') {
                 // Adds the assistant's response to the messages
@@ -198,6 +207,7 @@ class Thread extends EventEmitter {
                 };
                 this.addMessage(message);
                 this.emit('completed');
+                this._stream?.push(null);
             }
         });
     }

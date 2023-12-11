@@ -13,6 +13,5 @@ LLobotoMy for Azure
 ### Interfaces
 
 - [AssistantCreateParams](interfaces/AssistantCreateParams.md)
-- [FunctionTool](interfaces/FunctionTool.md)
 - [ToolCall](interfaces/ToolCall.md)
 - [ToolOutput](interfaces/ToolOutput.md)

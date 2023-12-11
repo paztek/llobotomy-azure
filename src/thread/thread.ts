@@ -1,16 +1,20 @@
 import type { ChatCompletions, ChatMessage, FunctionCall } from '@azure/openai';
 import EventEmitter from 'events';
-import { PassThrough, type Readable } from 'stream';
+import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 
 export class Thread extends EventEmitter {
-    private _stream = new PassThrough();
+    private _stream: Readable | null = null;
 
     constructor(private readonly messages: ChatMessage[] = []) {
         super();
     }
 
-    get stream(): Readable {
+    get stream(): Readable | null {
+        if (!this._stream) {
+            return null;
+        }
+
         return this._stream;
     }
 
@@ -20,6 +24,9 @@ export class Thread extends EventEmitter {
     }
 
     run(assistant: Assistant): void {
+        this._stream = new Readable({
+            read: () => {},
+        });
         this.doRun(assistant);
     }
 
@@ -184,7 +191,10 @@ export class Thread extends EventEmitter {
                 content += delta.content;
 
                 // Write also to the stream of the thread
-                this._stream.write(delta.content);
+                if (!this._stream) {
+                    throw new Error('No stream available');
+                }
+                this._stream?.push(delta.content);
             }
 
             if (choice.finishReason === 'stop') {
@@ -196,6 +206,7 @@ export class Thread extends EventEmitter {
                 this.addMessage(message);
 
                 this.emit('completed');
+                this._stream?.push(null);
             }
         });
     }

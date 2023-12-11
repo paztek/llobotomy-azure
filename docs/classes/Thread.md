@@ -76,17 +76,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L9)
+[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L9)
 
 ## Properties
 
 ### \_stream
 
-• `Private` **\_stream**: `PassThrough`
+• `Private` **\_stream**: ``null`` \| `Readable` = `null`
 
 #### Defined in
 
-[src/thread/thread.ts:7](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L7)
+[src/thread/thread.ts:7](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L7)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L9)
+[src/thread/thread.ts:9](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L9)
 
 ___
 
@@ -221,15 +221,15 @@ node_modules/@types/node/events.d.ts:395
 
 ### stream
 
-• `get` **stream**(): `Readable`
+• `get` **stream**(): ``null`` \| `Readable`
 
 #### Returns
 
-`Readable`
+``null`` \| `Readable`
 
 #### Defined in
 
-[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L13)
+[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L13)
 
 ## Methods
 
@@ -306,7 +306,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:17](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L17)
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L21)
 
 ___
 
@@ -326,7 +326,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L26)
+[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L33)
 
 ___
 
@@ -494,7 +494,7 @@ The first choice of these completions successively looks like this:
 
 #### Defined in
 
-[src/thread/thread.ts:170](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L170)
+[src/thread/thread.ts:177](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L177)
 
 ___
 
@@ -533,7 +533,7 @@ The first choice of these completions successively looks like this:
 
 #### Defined in
 
-[src/thread/thread.ts:92](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L92)
+[src/thread/thread.ts:99](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L99)
 
 ___
 
@@ -1048,7 +1048,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/a12ace7/src/thread/thread.ts#L22)
+[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/6b547f5/src/thread/thread.ts#L26)
 
 ___
 
