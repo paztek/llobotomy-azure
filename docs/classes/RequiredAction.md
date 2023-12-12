@@ -67,7 +67,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:173](https://github.com/paztek/llobotomy-azure/blob/8cd30fc/src/thread/thread.ts#L173)
+[src/thread/thread.ts:180](https://github.com/paztek/llobotomy-azure/blob/d427480/src/thread/thread.ts#L180)
 
 ## Properties
 
@@ -77,7 +77,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:173](https://github.com/paztek/llobotomy-azure/blob/8cd30fc/src/thread/thread.ts#L173)
+[src/thread/thread.ts:180](https://github.com/paztek/llobotomy-azure/blob/d427480/src/thread/thread.ts#L180)
 
 ___
 
@@ -934,7 +934,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:177](https://github.com/paztek/llobotomy-azure/blob/8cd30fc/src/thread/thread.ts#L177)
+[src/thread/thread.ts:184](https://github.com/paztek/llobotomy-azure/blob/d427480/src/thread/thread.ts#L184)
 
 ___
 

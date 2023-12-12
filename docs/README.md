@@ -38,7 +38,7 @@ m is ChatRequestMessage
 
 #### Defined in
 
-[src/thread/thread.ts:193](https://github.com/paztek/llobotomy-azure/blob/8cd30fc/src/thread/thread.ts#L193)
+[src/thread/thread.ts:200](https://github.com/paztek/llobotomy-azure/blob/d427480/src/thread/thread.ts#L200)
 
 ___
 
@@ -58,4 +58,4 @@ m is ChatResponseMessage
 
 #### Defined in
 
-[src/thread/thread.ts:187](https://github.com/paztek/llobotomy-azure/blob/8cd30fc/src/thread/thread.ts#L187)
+[src/thread/thread.ts:194](https://github.com/paztek/llobotomy-azure/blob/d427480/src/thread/thread.ts#L194)

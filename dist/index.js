@@ -80,14 +80,21 @@ class Thread extends EventEmitter {
             }
             // Merge toolCalls
             if (delta.toolCalls) {
-                for (const [index, toolCall] of delta.toolCalls.entries()) {
+                for (const toolCall of delta.toolCalls) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    const index = toolCall['index']; // Not typed yet by the @azure/openai package
                     const existingToolCall = toolCalls[index];
                     if (existingToolCall) {
                         existingToolCall.function.arguments +=
                             toolCall.function.arguments;
                     }
                     else {
-                        toolCalls.push(toolCall);
+                        toolCalls.push({
+                            type: toolCall.type,
+                            function: toolCall.function,
+                            id: toolCall.id,
+                        });
                     }
                 }
             }
