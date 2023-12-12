@@ -59,41 +59,6 @@ class Thread extends EventEmitter {
         this.emit('in_progress');
         const messages = this.getRequestMessages();
         const stream = assistant.listChatCompletions(messages);
-        /**
-         * When the LLM responds with some tool calls, the first completion's first choice usually looks like this:
-         * {
-         *   index: 0,
-         *   finishReason: null,
-         *   delta: {
-         *     role: 'assistant',
-         *     toolCalls: [
-         *         {
-         *             id: 'call_123abc',
-         *             type: 'function',
-         *             function: {
-         *                 name: 'get_customer_profile',
-         *                 arguments: ''
-         *             }
-         *         }
-         *     ]
-         *   },
-         *   contentFilterResults: {}
-         * }
-         *
-         * BUT it's not always the case. Sometimes the first toolCalls array is empty, content is also undefined.
-         * In that case, we need to wait for the next completion to determine if it's some tool calls or a chat message.
-         *
-         * When the LLM responds with a message, the first completion's first choice looks like this:
-         * {
-         *   index: 0,
-         *   finishReason: null,
-         *   delta: {
-         *     role: 'assistant',
-         *   },
-         *   contentFilterResults: {}
-         *
-         * We're only interested in the first completion and then we let the dedicated handler handle the rest of the stream
-         */
         let content = null;
         const toolCalls = [];
         stream.on('data', (completion) => {
@@ -129,11 +94,14 @@ class Thread extends EventEmitter {
             if (choice.finishReason === null) {
                 return;
             }
+            const finalToolCalls = [...toolCalls];
             const message = {
                 role: 'assistant',
                 content,
-                toolCalls,
+                toolCalls: finalToolCalls,
             };
+            content = null;
+            toolCalls.splice(0, toolCalls.length);
             this.doAddMessage(message);
             switch (choice.finishReason) {
                 case 'stop':
@@ -141,7 +109,7 @@ class Thread extends EventEmitter {
                     this.emit('completed');
                     break;
                 case 'tool_calls': {
-                    const requiredAction = new RequiredAction(toolCalls);
+                    const requiredAction = new RequiredAction(finalToolCalls);
                     requiredAction.on('submitting', (toolOutputs) => {
                         // Adds the tool outputs to the messages
                         for (const toolOutput of toolOutputs) {
