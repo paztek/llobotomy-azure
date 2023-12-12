@@ -17,7 +17,7 @@
 
 #### Defined in
 
-[src/thread/thread.ts:280](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L280)
+[src/thread/thread.ts:213](https://github.com/paztek/llobotomy-azure/blob/d316306/src/thread/thread.ts#L213)
 
 ___
 
@@ -27,4 +27,4 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:281](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L281)
+[src/thread/thread.ts:214](https://github.com/paztek/llobotomy-azure/blob/d316306/src/thread/thread.ts#L214)

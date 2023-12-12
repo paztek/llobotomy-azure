@@ -33,7 +33,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L24)
+[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L24)
 
 ## Properties
 
@@ -43,7 +43,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L18)
+[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L18)
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L22)
+[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L22)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L20)
+[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L20)
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L21)
 
 ## Methods
 
@@ -93,4 +93,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:31](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/assistant/assistant.ts#L31)
+[src/assistant/assistant.ts:31](https://github.com/paztek/llobotomy-azure/blob/d316306/src/assistant/assistant.ts#L31)

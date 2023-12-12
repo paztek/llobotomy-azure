@@ -57,6 +57,8 @@ describe('Thread', () => {
                     {
                         index: 0,
                         finishReason: null,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
                         delta: {
                             role: 'assistant',
                             toolCalls: [
@@ -65,9 +67,7 @@ describe('Thread', () => {
                                     type: 'function',
                                     function: {
                                         name: functionName,
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        arguments: undefined,
+                                        arguments: '',
                                     },
                                 },
                             ],
@@ -207,7 +207,7 @@ describe('Thread', () => {
             });
         });
 
-        describe('when the completions from the assistant are a text message', () => {
+        describe('when the completions from the assistant are (eventually) a text message', () => {
             beforeEach(() => {
                 const choices: ChatChoice[] = [
                     {

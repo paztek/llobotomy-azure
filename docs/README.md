@@ -13,7 +13,6 @@ LLobotoMy for Azure
 ### Interfaces
 
 - [AssistantCreateParams](interfaces/AssistantCreateParams.md)
-- [ToolCall](interfaces/ToolCall.md)
 - [ToolOutput](interfaces/ToolOutput.md)
 
 ### Functions
@@ -39,7 +38,7 @@ m is ChatRequestMessage
 
 #### Defined in
 
-[src/thread/thread.ts:290](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L290)
+[src/thread/thread.ts:223](https://github.com/paztek/llobotomy-azure/blob/d316306/src/thread/thread.ts#L223)
 
 ___
 
@@ -59,4 +58,4 @@ m is ChatResponseMessage
 
 #### Defined in
 
-[src/thread/thread.ts:284](https://github.com/paztek/llobotomy-azure/blob/3780e4f/src/thread/thread.ts#L284)
+[src/thread/thread.ts:217](https://github.com/paztek/llobotomy-azure/blob/d316306/src/thread/thread.ts#L217)
