@@ -36,9 +36,11 @@ export class Assistant {
         };
         messages = [systemMessage, ...messages];
 
-        const options: GetChatCompletionsOptions = {
-            tools: this.tools,
-        };
+        const options: GetChatCompletionsOptions = {};
+
+        if (this.tools.length > 0) {
+            options.tools = this.tools;
+        }
 
         const completions = this.client.listChatCompletions(
             this.deployment,

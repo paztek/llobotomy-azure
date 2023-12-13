@@ -23,9 +23,10 @@ class Assistant {
             content: this.instructions,
         };
         messages = [systemMessage, ...messages];
-        const options = {
-            tools: this.tools,
-        };
+        const options = {};
+        if (this.tools.length > 0) {
+            options.tools = this.tools;
+        }
         const completions = this.client.listChatCompletions(this.deployment, messages, options);
         return stream.Readable.from(completions, {
             objectMode: true,
