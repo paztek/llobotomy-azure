@@ -35,9 +35,8 @@ class Assistant {
 class Thread extends EventEmitter {
     constructor(messages = []) {
         super();
-        this.messages = [];
-        this._stream = null;
         this.messages = messages;
+        this._stream = null;
     }
     get stream() {
         if (!this._stream) {

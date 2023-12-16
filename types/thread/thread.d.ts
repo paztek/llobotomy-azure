@@ -7,7 +7,7 @@ import { Assistant } from '../assistant';
 export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
-    constructor(messages?: ChatRequestMessage[]);
+    constructor(messages?: (ChatRequestMessage | ChatResponseMessage)[]);
     get stream(): Readable | null;
     addMessage(message: ChatRequestMessage): void;
     run(assistant: Assistant): void;

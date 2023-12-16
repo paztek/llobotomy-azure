@@ -68,7 +68,7 @@
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `messages` | `ChatRequestMessage`[] | `[]` |
+| `messages` | (`ChatRequestMessage` \| `ChatResponseMessage`)[] | `[]` |
 
 #### Overrides
 
@@ -76,7 +76,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:17](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L17)
+[src/thread/thread.ts:15](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L15)
 
 ## Properties
 
@@ -86,7 +86,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:15](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L15)
+[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L13)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L13)
+[src/thread/thread.ts:16](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L16)
 
 ___
 
@@ -229,7 +229,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L22)
+[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L24)
 
 ## Methods
 
@@ -306,7 +306,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:30](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L30)
+[src/thread/thread.ts:32](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L32)
 
 ___
 
@@ -326,7 +326,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:165](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L165)
+[src/thread/thread.ts:167](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L167)
 
 ___
 
@@ -346,7 +346,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:41](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L41)
+[src/thread/thread.ts:43](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L43)
 
 ___
 
@@ -494,7 +494,7 @@ so they can be sent again to the LLM.
 
 #### Defined in
 
-[src/thread/thread.ts:148](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L148)
+[src/thread/thread.ts:150](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L150)
 
 ___
 
@@ -1009,7 +1009,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:34](https://github.com/paztek/llobotomy-azure/blob/05b3f2e/src/thread/thread.ts#L34)
+[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L36)
 
 ___
 

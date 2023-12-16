@@ -10,13 +10,15 @@ import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 
 export class Thread extends EventEmitter {
-    private readonly messages: (ChatRequestMessage | ChatResponseMessage)[] =
-        [];
     private _stream: Readable | null = null;
 
-    constructor(messages: ChatRequestMessage[] = []) {
+    constructor(
+        private readonly messages: (
+            | ChatRequestMessage
+            | ChatResponseMessage
+        )[] = [],
+    ) {
         super();
-        this.messages = messages;
     }
 
     get stream(): Readable | null {
