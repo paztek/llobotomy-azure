@@ -2,22 +2,22 @@ import type {
     ChatCompletions,
     ChatCompletionsToolCall,
     ChatRequestMessage,
-    ChatRequestToolMessage,
     ChatResponseMessage,
 } from '@azure/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
+import type {
+    ChatMessage,
+    ChatRequestMessageWithMetadata,
+    ChatRequestToolMessageWithMetadata,
+    ChatResponseMessageWithMetadata,
+} from '../message';
 
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
 
-    constructor(
-        private readonly messages: (
-            | ChatRequestMessage
-            | ChatResponseMessage
-        )[] = [],
-    ) {
+    constructor(private readonly messages: ChatMessage[] = []) {
         super();
     }
 
@@ -29,7 +29,7 @@ export class Thread extends EventEmitter {
         return this._stream;
     }
 
-    addMessage(message: ChatRequestMessage): void {
+    addMessage(message: ChatRequestMessageWithMetadata): void {
         this.doAddMessage(message);
     }
 
@@ -41,7 +41,7 @@ export class Thread extends EventEmitter {
     }
 
     private doRun(assistant: Assistant): void {
-        this.emit('in_progress');
+        this.emitImmediate('in_progress');
 
         const messages = this.getRequestMessages();
 
@@ -112,7 +112,7 @@ export class Thread extends EventEmitter {
             switch (choice.finishReason) {
                 case 'stop':
                     this._stream?.push(null);
-                    this.emit('completed');
+                    this.emitImmediate('completed');
                     break;
                 case 'tool_calls': {
                     const requiredAction = new RequiredAction(finalToolCalls);
@@ -121,18 +121,24 @@ export class Thread extends EventEmitter {
                         (toolOutputs: ToolOutput[]) => {
                             // Adds the tool outputs to the messages
                             for (const toolOutput of toolOutputs) {
-                                const message: ChatRequestToolMessage = {
-                                    role: 'tool',
-                                    content: JSON.stringify(toolOutput.value),
-                                    toolCallId: toolOutput.callId,
-                                };
+                                const message: ChatRequestToolMessageWithMetadata =
+                                    {
+                                        role: 'tool',
+                                        content: JSON.stringify(
+                                            toolOutput.value,
+                                        ),
+                                        toolCallId: toolOutput.callId,
+                                    };
+                                if (toolOutput.metadata !== void 0) {
+                                    message.metadata = toolOutput.metadata;
+                                }
                                 this.doAddMessage(message);
                             }
 
                             this.doRun(assistant);
                         },
                     );
-                    this.emit('requires_action', requiredAction);
+                    this.emitImmediate('requires_action', requiredAction);
                     break;
                 }
                 default:
@@ -147,18 +153,19 @@ export class Thread extends EventEmitter {
      * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
      * so they can be sent again to the LLM.
      */
-    private getRequestMessages(): ChatRequestMessage[] {
+    private getRequestMessages(): ChatRequestMessageWithMetadata[] {
         return this.messages.map((m) => {
             if (m.role === 'system' || m.role === 'user' || m.role === 'tool') {
                 // These are messages from the application (a.k.a request messages)
-                return m as ChatRequestMessage;
+                return m as ChatRequestMessageWithMetadata;
             } else {
                 // These are messages from the assistant (a.k.a response messages)
-                const responseMessage = m as ChatResponseMessage;
+                const responseMessage = m as ChatResponseMessageWithMetadata;
                 return {
                     role: 'assistant',
                     content: responseMessage.content,
                     toolCalls: responseMessage.toolCalls,
+                    metadata: responseMessage.metadata,
                 };
             }
         });
@@ -168,13 +175,20 @@ export class Thread extends EventEmitter {
         message: ChatRequestMessage | ChatResponseMessage,
     ): void {
         this.messages.push(message);
-        this.emit('message', message);
+
+        this.emitImmediate('message', message);
 
         if (isChatRequestMessage(message)) {
-            this.emit('message:request', message);
+            this.emitImmediate('message:request', message);
         } else {
-            this.emit('message:response', message);
+            this.emitImmediate('message:response', message);
         }
+    }
+
+    private emitImmediate(event: string, ...args: unknown[]): void {
+        setImmediate(() => {
+            this.emit(event, ...args);
+        });
     }
 }
 
@@ -191,6 +205,7 @@ export class RequiredAction extends EventEmitter {
 export interface ToolOutput {
     callId: string;
     value: unknown;
+    metadata?: unknown;
 }
 
 export function isChatResponseMessage(

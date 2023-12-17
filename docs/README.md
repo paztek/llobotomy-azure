@@ -15,10 +15,118 @@ LLobotoMy for Azure
 - [AssistantCreateParams](interfaces/AssistantCreateParams.md)
 - [ToolOutput](interfaces/ToolOutput.md)
 
+### Type Aliases
+
+- [ChatMessage](README.md#chatmessage)
+- [ChatRequestAssistantMessageWithMetadata](README.md#chatrequestassistantmessagewithmetadata)
+- [ChatRequestFunctionMessageWithMetadata](README.md#chatrequestfunctionmessagewithmetadata)
+- [ChatRequestMessageWithMetadata](README.md#chatrequestmessagewithmetadata)
+- [ChatRequestSystemMessageWithMetadata](README.md#chatrequestsystemmessagewithmetadata)
+- [ChatRequestToolMessageWithMetadata](README.md#chatrequesttoolmessagewithmetadata)
+- [ChatRequestUserMessageWithMetadata](README.md#chatrequestusermessagewithmetadata)
+- [ChatResponseMessageWithMetadata](README.md#chatresponsemessagewithmetadata)
+- [WithMetadata](README.md#withmetadata)
+
 ### Functions
 
 - [isChatRequestMessage](README.md#ischatrequestmessage)
 - [isChatResponseMessage](README.md#ischatresponsemessage)
+
+## Type Aliases
+
+### ChatMessage
+
+Ƭ **ChatMessage**: [`ChatRequestMessageWithMetadata`](README.md#chatrequestmessagewithmetadata) \| [`ChatResponseMessageWithMetadata`](README.md#chatresponsemessagewithmetadata)
+
+#### Defined in
+
+[src/message/message.ts:32](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L32)
+
+___
+
+### ChatRequestAssistantMessageWithMetadata
+
+Ƭ **ChatRequestAssistantMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatRequestAssistantMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:16](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L16)
+
+___
+
+### ChatRequestFunctionMessageWithMetadata
+
+Ƭ **ChatRequestFunctionMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatRequestFunctionMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:20](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L20)
+
+___
+
+### ChatRequestMessageWithMetadata
+
+Ƭ **ChatRequestMessageWithMetadata**: [`ChatRequestSystemMessageWithMetadata`](README.md#chatrequestsystemmessagewithmetadata) \| [`ChatRequestUserMessageWithMetadata`](README.md#chatrequestusermessagewithmetadata) \| [`ChatRequestAssistantMessageWithMetadata`](README.md#chatrequestassistantmessagewithmetadata) \| [`ChatRequestToolMessageWithMetadata`](README.md#chatrequesttoolmessagewithmetadata) \| [`ChatRequestFunctionMessageWithMetadata`](README.md#chatrequestfunctionmessagewithmetadata)
+
+#### Defined in
+
+[src/message/message.ts:25](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L25)
+
+___
+
+### ChatRequestSystemMessageWithMetadata
+
+Ƭ **ChatRequestSystemMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatRequestSystemMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:12](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L12)
+
+___
+
+### ChatRequestToolMessageWithMetadata
+
+Ƭ **ChatRequestToolMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatRequestToolMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:18](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L18)
+
+___
+
+### ChatRequestUserMessageWithMetadata
+
+Ƭ **ChatRequestUserMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatRequestUserMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:14](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L14)
+
+___
+
+### ChatResponseMessageWithMetadata
+
+Ƭ **ChatResponseMessageWithMetadata**: [`WithMetadata`](README.md#withmetadata)<`ChatResponseMessage`\>
+
+#### Defined in
+
+[src/message/message.ts:23](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L23)
+
+___
+
+### WithMetadata
+
+Ƭ **WithMetadata**<`T`\>: `T` & { `metadata?`: `unknown`  }
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+[src/message/message.ts:10](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/message/message.ts#L10)
 
 ## Functions
 
@@ -38,7 +146,7 @@ m is ChatRequestMessage
 
 #### Defined in
 
-[src/thread/thread.ts:202](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L202)
+[src/thread/thread.ts:217](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L217)
 
 ___
 
@@ -58,4 +166,4 @@ m is ChatResponseMessage
 
 #### Defined in
 
-[src/thread/thread.ts:196](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L196)
+[src/thread/thread.ts:211](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L211)

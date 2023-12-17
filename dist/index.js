@@ -56,7 +56,7 @@ class Thread extends EventEmitter {
         this.doRun(assistant);
     }
     doRun(assistant) {
-        this.emit('in_progress');
+        this.emitImmediate('in_progress');
         const messages = this.getRequestMessages();
         const stream = assistant.listChatCompletions(messages);
         let content = null;
@@ -113,7 +113,7 @@ class Thread extends EventEmitter {
             switch (choice.finishReason) {
                 case 'stop':
                     this._stream?.push(null);
-                    this.emit('completed');
+                    this.emitImmediate('completed');
                     break;
                 case 'tool_calls': {
                     const requiredAction = new RequiredAction(finalToolCalls);
@@ -125,11 +125,14 @@ class Thread extends EventEmitter {
                                 content: JSON.stringify(toolOutput.value),
                                 toolCallId: toolOutput.callId,
                             };
+                            if (toolOutput.metadata !== void 0) {
+                                message.metadata = toolOutput.metadata;
+                            }
                             this.doAddMessage(message);
                         }
                         this.doRun(assistant);
                     });
-                    this.emit('requires_action', requiredAction);
+                    this.emitImmediate('requires_action', requiredAction);
                     break;
                 }
                 default:
@@ -154,19 +157,25 @@ class Thread extends EventEmitter {
                     role: 'assistant',
                     content: responseMessage.content,
                     toolCalls: responseMessage.toolCalls,
+                    metadata: responseMessage.metadata,
                 };
             }
         });
     }
     doAddMessage(message) {
         this.messages.push(message);
-        this.emit('message', message);
+        this.emitImmediate('message', message);
         if (isChatRequestMessage(message)) {
-            this.emit('message:request', message);
+            this.emitImmediate('message:request', message);
         }
         else {
-            this.emit('message:response', message);
+            this.emitImmediate('message:response', message);
         }
+    }
+    emitImmediate(event, ...args) {
+        setImmediate(() => {
+            this.emit(event, ...args);
+        });
     }
 }
 class RequiredAction extends EventEmitter {

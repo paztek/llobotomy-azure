@@ -35,6 +35,7 @@
 - [doAddMessage](Thread.md#doaddmessage)
 - [doRun](Thread.md#dorun)
 - [emit](Thread.md#emit)
+- [emitImmediate](Thread.md#emitimmediate)
 - [eventNames](Thread.md#eventnames)
 - [getMaxListeners](Thread.md#getmaxlisteners)
 - [getRequestMessages](Thread.md#getrequestmessages)
@@ -68,7 +69,7 @@
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
-| `messages` | (`ChatRequestMessage` \| `ChatResponseMessage`)[] | `[]` |
+| `messages` | [`ChatMessage`](../README.md#chatmessage)[] | `[]` |
 
 #### Overrides
 
@@ -76,7 +77,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:15](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L15)
+[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L20)
 
 ## Properties
 
@@ -86,17 +87,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:13](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L13)
+[src/thread/thread.ts:18](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L18)
 
 ___
 
 ### messages
 
-• `Private` `Readonly` **messages**: (`ChatRequestMessage` \| `ChatResponseMessage`)[] = `[]`
+• `Private` `Readonly` **messages**: [`ChatMessage`](../README.md#chatmessage)[] = `[]`
 
 #### Defined in
 
-[src/thread/thread.ts:16](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L16)
+[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L20)
 
 ___
 
@@ -229,7 +230,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L24)
+[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L24)
 
 ## Methods
 
@@ -298,7 +299,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `message` | `ChatRequestMessage` |
+| `message` | [`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata) |
 
 #### Returns
 
@@ -306,7 +307,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:32](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L32)
+[src/thread/thread.ts:32](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L32)
 
 ___
 
@@ -326,7 +327,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:167](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L167)
+[src/thread/thread.ts:174](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L174)
 
 ___
 
@@ -346,7 +347,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:43](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L43)
+[src/thread/thread.ts:43](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L43)
 
 ___
 
@@ -417,6 +418,27 @@ node_modules/@types/node/events.d.ts:807
 
 ___
 
+### emitImmediate
+
+▸ `Private` **emitImmediate**(`event`, `...args`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `event` | `string` |
+| `...args` | `unknown`[] |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:188](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L188)
+
+___
+
 ### eventNames
 
 ▸ **eventNames**(): (`string` \| `symbol`)[]
@@ -483,18 +505,18 @@ ___
 
 ### getRequestMessages
 
-▸ `Private` **getRequestMessages**(): `ChatRequestMessage`[]
+▸ `Private` **getRequestMessages**(): [`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata)[]
 
 Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
 so they can be sent again to the LLM.
 
 #### Returns
 
-`ChatRequestMessage`[]
+[`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata)[]
 
 #### Defined in
 
-[src/thread/thread.ts:150](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L150)
+[src/thread/thread.ts:156](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L156)
 
 ___
 
@@ -1009,7 +1031,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L36)
+[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L36)
 
 ___
 

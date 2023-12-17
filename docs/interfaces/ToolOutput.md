@@ -7,6 +7,7 @@
 ### Properties
 
 - [callId](ToolOutput.md#callid)
+- [metadata](ToolOutput.md#metadata)
 - [value](ToolOutput.md#value)
 
 ## Properties
@@ -17,7 +18,17 @@
 
 #### Defined in
 
-[src/thread/thread.ts:192](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L192)
+[src/thread/thread.ts:206](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L206)
+
+___
+
+### metadata
+
+• `Optional` **metadata**: `unknown`
+
+#### Defined in
+
+[src/thread/thread.ts:208](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L208)
 
 ___
 
@@ -27,4 +38,4 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:193](https://github.com/paztek/llobotomy-azure/blob/fbbccc7/src/thread/thread.ts#L193)
+[src/thread/thread.ts:207](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L207)

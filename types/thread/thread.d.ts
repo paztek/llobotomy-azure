@@ -4,12 +4,13 @@ import type { ChatCompletionsToolCall, ChatRequestMessage, ChatResponseMessage }
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
+import type { ChatMessage, ChatRequestMessageWithMetadata } from '../message';
 export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
-    constructor(messages?: (ChatRequestMessage | ChatResponseMessage)[]);
+    constructor(messages?: ChatMessage[]);
     get stream(): Readable | null;
-    addMessage(message: ChatRequestMessage): void;
+    addMessage(message: ChatRequestMessageWithMetadata): void;
     run(assistant: Assistant): void;
     private doRun;
     /**
@@ -18,6 +19,7 @@ export declare class Thread extends EventEmitter {
      */
     private getRequestMessages;
     private doAddMessage;
+    private emitImmediate;
 }
 export declare class RequiredAction extends EventEmitter {
     readonly toolCalls: ChatCompletionsToolCall[];
@@ -27,6 +29,7 @@ export declare class RequiredAction extends EventEmitter {
 export interface ToolOutput {
     callId: string;
     value: unknown;
+    metadata?: unknown;
 }
 export declare function isChatResponseMessage(m: ChatRequestMessage | ChatResponseMessage): m is ChatResponseMessage;
 export declare function isChatRequestMessage(m: ChatRequestMessage | ChatResponseMessage): m is ChatRequestMessage;

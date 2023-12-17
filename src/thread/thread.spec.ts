@@ -1,13 +1,14 @@
 import type {
     ChatChoice,
     ChatCompletions,
-    ChatRequestMessage,
     ChatRequestUserMessage,
     ChatResponseMessage,
 } from '@azure/openai';
+import type { ChatRequestToolMessage } from '@azure/openai/types/src/models/models';
 import { mock } from 'jest-mock-extended';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
+import type { ChatMessage } from '../message';
 import { RequiredAction, Thread } from './thread';
 
 describe('Thread', () => {
@@ -32,9 +33,30 @@ describe('Thread', () => {
             content: 'Hello',
         };
 
-        it('emits a "message" and a "message:request" events', () => {
+        it('emits a "message" and a "message:request" events', async () => {
             thread.addMessage(message);
+
+            // The "message" event is sent asynchronously, we need to wait for it to be emitted
+            await new Promise<void>((resolve, reject) => {
+                thread.on('error', reject);
+                thread.on('message', (message) => {
+                    if (isChatRequestUserMessage(message)) {
+                        resolve();
+                    }
+                });
+            });
             expect(emitSpy).nthCalledWith(1, 'message', message);
+
+            // The message:request event is sent asynchronously, we need to wait for it to be emitted
+            await new Promise<void>((resolve, reject) => {
+                thread.on('error', reject);
+                thread.on('message:request', (message) => {
+                    if (isChatRequestUserMessage(message)) {
+                        resolve();
+                    }
+                });
+            });
+
             expect(emitSpy).nthCalledWith(2, 'message:request', message);
         });
     });
@@ -44,8 +66,15 @@ describe('Thread', () => {
             assistant.listChatCompletions.mockReturnValue(Readable.from([]));
         });
 
-        it('emits an "in_progress" event', () => {
+        it('emits an "in_progress" event', async () => {
             thread.run(assistant);
+
+            // The "in_progress" event is sent asynchronously, we need to wait for it to be emitted
+            await new Promise<void>((resolve, reject) => {
+                thread.on('error', reject);
+                thread.on('in_progress', resolve);
+            });
+
             expect(emitSpy).toHaveBeenCalledWith('in_progress');
         });
 
@@ -585,6 +614,145 @@ describe('Thread', () => {
                 expect(response).toEqual('Lorem ipsum dolor sit amet');
             });
         });
+
+        describe('when submitting a tool output', () => {
+            const functionName = 'get_customer_profile';
+            const toolCallId = 'tool-call-1234abc';
+            const profile = {
+                id: 'ABC',
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+            };
+
+            beforeEach(() => {
+                const choices: ChatChoice[] = [
+                    {
+                        index: 0,
+                        finishReason: null,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        delta: {
+                            role: 'assistant',
+                            toolCalls: [
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
+                                    index: 0,
+                                    id: toolCallId,
+                                    type: 'function',
+                                    function: {
+                                        name: functionName,
+                                        arguments: '{"id":"ABC"}',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        index: 0,
+                        finishReason: 'tool_calls',
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        delta: {
+                            toolCalls: [],
+                        },
+                    },
+                ];
+                const completions: ChatCompletions[] = choices.map(
+                    (choice) => ({
+                        id: 'chat-cmpl-1234abc',
+                        created: new Date(),
+                        choices: [choice],
+                        promptFilterResults: [],
+                    }),
+                );
+
+                assistant.listChatCompletions.mockReturnValue(
+                    Readable.from(
+                        createAsyncIterable<ChatCompletions>(completions),
+                    ),
+                );
+            });
+
+            it('emits a message event from the tool with the tool output', async () => {
+                thread.run(assistant);
+
+                // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
+                const requiredAction = await new Promise<RequiredAction>(
+                    (resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('requires_action', resolve);
+                    },
+                );
+
+                requiredAction.submitToolOutputs([
+                    {
+                        callId: toolCallId,
+                        value: profile,
+                    },
+                ]);
+
+                // The "message" event is sent asynchronously, we need to wait for it to be emitted
+                await new Promise<void>((resolve, reject) => {
+                    thread.on('error', reject);
+                    thread.on('message', (message) => {
+                        if (isChatRequestToolMessage(message)) {
+                            resolve();
+                        }
+                    });
+                });
+
+                expect(emitSpy).nthCalledWith(5, 'message', {
+                    role: 'tool',
+                    content: JSON.stringify(profile),
+                    toolCallId,
+                });
+            });
+
+            describe('when the tool output has metadata', () => {
+                const metadata = {
+                    foo: 'bar',
+                    baz: true,
+                };
+
+                it('includes the metadata in the emitted tool message', async () => {
+                    thread.run(assistant);
+
+                    // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
+                    const requiredAction = await new Promise<RequiredAction>(
+                        (resolve, reject) => {
+                            thread.on('error', reject);
+                            thread.on('requires_action', resolve);
+                        },
+                    );
+
+                    requiredAction.submitToolOutputs([
+                        {
+                            callId: toolCallId,
+                            value: profile,
+                            metadata,
+                        },
+                    ]);
+
+                    // The "message" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('message', (message) => {
+                            if (isChatRequestToolMessage(message)) {
+                                resolve();
+                            }
+                        });
+                    });
+
+                    expect(emitSpy).nthCalledWith(5, 'message', {
+                        role: 'tool',
+                        content: JSON.stringify(profile),
+                        toolCallId,
+                        metadata,
+                    });
+                });
+            });
+        });
     });
 });
 
@@ -594,16 +762,24 @@ async function* createAsyncIterable<T>(items: T[]): AsyncIterable<T> {
     }
 }
 
+function isChatRequestUserMessage(m: ChatMessage): m is ChatRequestUserMessage {
+    return m.role === 'user';
+}
+
 function isChatResponseAssistantContentMessage(
-    m: ChatRequestMessage | ChatResponseMessage,
+    m: ChatMessage,
 ): m is ChatResponseMessage {
     return m.role === 'assistant' && m.content !== null;
 }
 
 function isChatResponseAssistantToolCallsMessage(
-    m: ChatRequestMessage | ChatResponseMessage,
+    m: ChatMessage,
 ): m is ChatResponseMessage {
     return (
         m.role === 'assistant' && 'toolCalls' in m && m.toolCalls?.length > 0
     );
+}
+
+function isChatRequestToolMessage(m: ChatMessage): m is ChatRequestToolMessage {
+    return m.role === 'tool';
 }
