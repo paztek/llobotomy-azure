@@ -34,11 +34,58 @@ class Assistant {
     }
 }
 
+class ThreadMessageConverter {
+    /**
+     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
+     * so they can be sent again to the LLM.
+     */
+    convert(messages) {
+        return messages.map((m) => {
+            switch (m.role) {
+                case 'system': {
+                    const systemMessage = m;
+                    return {
+                        role: 'system',
+                        content: systemMessage.content,
+                    };
+                }
+                case 'user': {
+                    const userMessage = m;
+                    return {
+                        role: 'user',
+                        content: userMessage.content,
+                        name: userMessage.name,
+                    };
+                }
+                case 'tool': {
+                    const toolMessage = m;
+                    return {
+                        role: 'tool',
+                        content: toolMessage.content,
+                        toolCallId: toolMessage.toolCallId,
+                    };
+                }
+                case 'assistant': {
+                    const assistantMessage = m;
+                    return {
+                        role: 'assistant',
+                        content: assistantMessage.content,
+                        toolCalls: assistantMessage.toolCalls,
+                    };
+                }
+                default:
+                    throw new Error(`Unknown message role ${m.role}`);
+            }
+        });
+    }
+}
+
 class Thread extends EventEmitter {
     constructor(messages = []) {
         super();
         this.messages = messages;
         this._stream = null;
+        this.converter = new ThreadMessageConverter();
     }
     get stream() {
         if (!this._stream) {
@@ -57,7 +104,7 @@ class Thread extends EventEmitter {
     }
     doRun(assistant) {
         this.emitImmediate('in_progress');
-        const messages = this.getRequestMessages();
+        const messages = this.converter.convert(this.messages);
         const stream = assistant.listChatCompletions(messages);
         let content = null;
         const toolCalls = [];
@@ -137,28 +184,6 @@ class Thread extends EventEmitter {
                 }
                 default:
                     throw new Error(`Unknown finish reason ${choice.finishReason}`);
-            }
-        });
-    }
-    /**
-     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
-     * so they can be sent again to the LLM.
-     */
-    getRequestMessages() {
-        return this.messages.map((m) => {
-            if (m.role === 'system' || m.role === 'user' || m.role === 'tool') {
-                // These are messages from the application (a.k.a request messages)
-                return m;
-            }
-            else {
-                // These are messages from the assistant (a.k.a response messages)
-                const responseMessage = m;
-                return {
-                    role: 'assistant',
-                    content: responseMessage.content,
-                    toolCalls: responseMessage.toolCalls,
-                    metadata: responseMessage.metadata,
-                };
             }
         });
     }

@@ -17,6 +17,7 @@
 ### Properties
 
 - [\_stream](Thread.md#_stream)
+- [converter](Thread.md#converter)
 - [messages](Thread.md#messages)
 - [captureRejectionSymbol](Thread.md#capturerejectionsymbol)
 - [captureRejections](Thread.md#capturerejections)
@@ -38,7 +39,6 @@
 - [emitImmediate](Thread.md#emitimmediate)
 - [eventNames](Thread.md#eventnames)
 - [getMaxListeners](Thread.md#getmaxlisteners)
-- [getRequestMessages](Thread.md#getrequestmessages)
 - [listenerCount](Thread.md#listenercount)
 - [listeners](Thread.md#listeners)
 - [off](Thread.md#off)
@@ -77,7 +77,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L20)
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L21)
 
 ## Properties
 
@@ -87,7 +87,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:18](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L18)
+[src/thread/thread.ts:18](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L18)
+
+___
+
+### converter
+
+• `Private` `Readonly` **converter**: `ThreadMessageConverter`
+
+#### Defined in
+
+[src/thread/thread.ts:19](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L19)
 
 ___
 
@@ -97,7 +107,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L20)
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L21)
 
 ___
 
@@ -230,7 +240,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L24)
+[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L25)
 
 ## Methods
 
@@ -307,7 +317,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:32](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L32)
+[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L33)
 
 ___
 
@@ -327,7 +337,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:174](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L174)
+[src/thread/thread.ts:153](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L153)
 
 ___
 
@@ -347,7 +357,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:43](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L43)
+[src/thread/thread.ts:44](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L44)
 
 ___
 
@@ -435,7 +445,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:188](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L188)
+[src/thread/thread.ts:167](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L167)
 
 ___
 
@@ -500,23 +510,6 @@ EventEmitter.getMaxListeners
 #### Defined in
 
 node_modules/@types/node/events.d.ts:722
-
-___
-
-### getRequestMessages
-
-▸ `Private` **getRequestMessages**(): [`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata)[]
-
-Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
-so they can be sent again to the LLM.
-
-#### Returns
-
-[`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata)[]
-
-#### Defined in
-
-[src/thread/thread.ts:156](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L156)
 
 ___
 
@@ -1031,7 +1024,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/4c3ad38/src/thread/thread.ts#L36)
+[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/3ac86a2/src/thread/thread.ts#L37)
 
 ___
 

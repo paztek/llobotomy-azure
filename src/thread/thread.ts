@@ -11,11 +11,12 @@ import type {
     ChatMessage,
     ChatRequestMessageWithMetadata,
     ChatRequestToolMessageWithMetadata,
-    ChatResponseMessageWithMetadata,
 } from '../message';
+import { ThreadMessageConverter } from './message.converter';
 
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
+    private readonly converter = new ThreadMessageConverter();
 
     constructor(private readonly messages: ChatMessage[] = []) {
         super();
@@ -43,7 +44,7 @@ export class Thread extends EventEmitter {
     private doRun(assistant: Assistant): void {
         this.emitImmediate('in_progress');
 
-        const messages = this.getRequestMessages();
+        const messages = this.converter.convert(this.messages);
 
         const stream = assistant.listChatCompletions(messages);
 
@@ -145,28 +146,6 @@ export class Thread extends EventEmitter {
                     throw new Error(
                         `Unknown finish reason ${choice.finishReason}`,
                     );
-            }
-        });
-    }
-
-    /**
-     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
-     * so they can be sent again to the LLM.
-     */
-    private getRequestMessages(): ChatRequestMessageWithMetadata[] {
-        return this.messages.map((m) => {
-            if (m.role === 'system' || m.role === 'user' || m.role === 'tool') {
-                // These are messages from the application (a.k.a request messages)
-                return m as ChatRequestMessageWithMetadata;
-            } else {
-                // These are messages from the assistant (a.k.a response messages)
-                const responseMessage = m as ChatResponseMessageWithMetadata;
-                return {
-                    role: 'assistant',
-                    content: responseMessage.content,
-                    toolCalls: responseMessage.toolCalls,
-                    metadata: responseMessage.metadata,
-                };
             }
         });
     }

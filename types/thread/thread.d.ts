@@ -8,16 +8,12 @@ import type { ChatMessage, ChatRequestMessageWithMetadata } from '../message';
 export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
+    private readonly converter;
     constructor(messages?: ChatMessage[]);
     get stream(): Readable | null;
     addMessage(message: ChatRequestMessageWithMetadata): void;
     run(assistant: Assistant): void;
     private doRun;
-    /**
-     * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
-     * so they can be sent again to the LLM.
-     */
-    private getRequestMessages;
     private doAddMessage;
     private emitImmediate;
 }
