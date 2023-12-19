@@ -7,7 +7,7 @@ import type {
     ChatRequestUserMessage,
 } from '@azure/openai/types/src/models/models';
 
-export type WithMetadata<T> = T & { metadata?: unknown };
+export type WithMetadata<T, U = unknown> = T & { metadata?: U };
 
 export type ChatRequestSystemMessageWithMetadata =
     WithMetadata<ChatRequestSystemMessage>;
