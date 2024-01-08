@@ -3,6 +3,7 @@ import type {
     ChatCompletionsToolCall,
     ChatRequestMessage,
     ChatResponseMessage,
+    FunctionCall,
 } from '@azure/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
@@ -13,10 +14,12 @@ import type {
     ChatRequestToolMessageWithMetadata,
 } from '../message';
 import { ThreadMessageConverter } from './message.converter';
+import { ToolEmulator } from './tool.emulator';
 
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
     private readonly converter = new ThreadMessageConverter();
+    private readonly toolEmulator = new ToolEmulator();
 
     constructor(private readonly messages: ChatMessage[] = []) {
         super();
@@ -50,8 +53,13 @@ export class Thread extends EventEmitter {
 
         let content: string | null = null;
         const toolCalls: ChatCompletionsToolCall[] = [];
+        let functionCall: FunctionCall | undefined = undefined;
 
         stream.on('data', (completion: ChatCompletions) => {
+            if (!completion.id || completion.id === '') {
+                // First completion is empty when using old models like gpt-35-turbo
+                return;
+            }
             const choice = completion.choices[0];
             if (!choice) {
                 throw new Error('No completions returned');
@@ -93,11 +101,41 @@ export class Thread extends EventEmitter {
                 }
             }
 
+            // Merge functionCalls
+            if (delta.functionCall) {
+                if (functionCall) {
+                    functionCall.arguments += delta.functionCall.arguments;
+                } else {
+                    functionCall = {
+                        ...delta.functionCall,
+                        arguments: '',
+                    };
+                }
+            }
+
             if (choice.finishReason === null) {
                 return;
             }
 
-            const finalToolCalls = [...toolCalls];
+            let finalToolCalls: ChatCompletionsToolCall[];
+
+            if (toolCalls.length > 0) {
+                finalToolCalls = [...toolCalls];
+            } else if (functionCall) {
+                /**
+                 * We received a legacy function call, we convert it to a tool call with an emulated ID
+                 */
+                const toolCall: ChatCompletionsToolCall = {
+                    type: 'function',
+                    function: functionCall,
+                    id: this.toolEmulator.generateEmulatedToolCallId(
+                        functionCall,
+                    ),
+                };
+                finalToolCalls = [toolCall];
+            } else {
+                finalToolCalls = [];
+            }
 
             const message: ChatResponseMessage = {
                 role: 'assistant',
@@ -107,6 +145,7 @@ export class Thread extends EventEmitter {
 
             content = null;
             toolCalls.splice(0, toolCalls.length);
+            functionCall = undefined;
 
             this.doAddMessage(message);
 
@@ -115,31 +154,12 @@ export class Thread extends EventEmitter {
                     this._stream?.push(null);
                     this.emitImmediate('completed');
                     break;
-                case 'tool_calls': {
-                    const requiredAction = new RequiredAction(finalToolCalls);
-                    requiredAction.on(
-                        'submitting',
-                        (toolOutputs: ToolOutput[]) => {
-                            // Adds the tool outputs to the messages
-                            for (const toolOutput of toolOutputs) {
-                                const message: ChatRequestToolMessageWithMetadata =
-                                    {
-                                        role: 'tool',
-                                        content: JSON.stringify(
-                                            toolOutput.value,
-                                        ),
-                                        toolCallId: toolOutput.callId,
-                                    };
-                                if (toolOutput.metadata !== void 0) {
-                                    message.metadata = toolOutput.metadata;
-                                }
-                                this.doAddMessage(message);
-                            }
-
-                            this.doRun(assistant);
-                        },
-                    );
-                    this.emitImmediate('requires_action', requiredAction);
+                case 'tool_calls':
+                case 'function_call': {
+                    if (message.toolCalls.length === 0) {
+                        throw new Error('No tool calls returned');
+                    }
+                    this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
                 default:
@@ -148,6 +168,37 @@ export class Thread extends EventEmitter {
                     );
             }
         });
+    }
+
+    private dispatchRequiredAction(
+        toolCalls: ChatCompletionsToolCall[],
+        assistant: Assistant,
+    ): void {
+        const requiredAction = new RequiredAction(toolCalls);
+        requiredAction.on('submitting', (toolOutputs: ToolOutput[]) =>
+            this.handleSubmittedToolOutputs(toolOutputs, assistant),
+        );
+        this.emitImmediate('requires_action', requiredAction);
+    }
+
+    private handleSubmittedToolOutputs(
+        toolOutputs: ToolOutput[],
+        assistant: Assistant,
+    ): void {
+        // Adds the tool outputs to the messages
+        for (const toolOutput of toolOutputs) {
+            const message: ChatRequestToolMessageWithMetadata = {
+                role: 'tool',
+                content: JSON.stringify(toolOutput.value),
+                toolCallId: toolOutput.callId,
+            };
+            if (toolOutput.metadata !== void 0) {
+                message.metadata = toolOutput.metadata;
+            }
+            this.doAddMessage(message);
+        }
+
+        this.doRun(assistant);
     }
 
     private doAddMessage(

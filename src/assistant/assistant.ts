@@ -12,6 +12,7 @@ export interface AssistantCreateParams {
     instructions: string;
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
+    useLegacyFunctions?: boolean;
 }
 
 export class Assistant {
@@ -20,12 +21,14 @@ export class Assistant {
     private readonly instructions: string;
     private readonly tools: ChatCompletionsToolDefinition[];
     private readonly deployment: string;
+    private readonly useLegacyFunctions: boolean;
 
     constructor(params: AssistantCreateParams) {
         this.client = params.client;
         this.instructions = params.instructions;
         this.tools = params.tools;
         this.deployment = params.deployment;
+        this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
 
     listChatCompletions(messages: ChatRequestMessage[]): Readable {
@@ -39,7 +42,14 @@ export class Assistant {
         const options: GetChatCompletionsOptions = {};
 
         if (this.tools.length > 0) {
-            options.tools = this.tools;
+            if (this.useLegacyFunctions) {
+                // Convert tools to functions
+                options.functions = this.tools.map((tool) => {
+                    return tool.function;
+                });
+            } else {
+                options.tools = this.tools;
+            }
         }
 
         const completions = this.client.listChatCompletions(
@@ -51,5 +61,35 @@ export class Assistant {
         return Readable.from(completions, {
             objectMode: true,
         });
+    }
+
+    async getChatCompletions(messages: ChatRequestMessage[]): Promise<void> {
+        // Prepend the messages with our instructions as a "system" message
+        const systemMessage: ChatRequestSystemMessage = {
+            role: 'system',
+            content: this.instructions,
+        };
+        messages = [systemMessage, ...messages];
+
+        const options: GetChatCompletionsOptions = {};
+
+        if (this.tools.length > 0) {
+            if (this.useLegacyFunctions) {
+                // Convert tools to functions
+                options.functions = this.tools.map((tool) => {
+                    return tool.function;
+                });
+            } else {
+                options.tools = this.tools;
+            }
+        }
+
+        const completions = await this.client.getChatCompletions(
+            this.deployment,
+            messages,
+            options,
+        );
+
+        console.log('Completions:', completions);
     }
 }
