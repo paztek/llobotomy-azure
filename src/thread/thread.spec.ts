@@ -497,6 +497,146 @@ describe('Thread', () => {
             });
         });
 
+        describe('when the completions from the assistant are a function call', () => {
+            const functionName = 'get_customer_profile';
+
+            beforeEach(() => {
+                const choices: ChatChoice[] = [
+                    {
+                        index: 0,
+                        finishReason: null,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        delta: {
+                            role: 'assistant',
+                            functionCall: {
+                                name: functionName,
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                arguments: undefined,
+                            },
+                        },
+                    },
+                    {
+                        index: 0,
+                        finishReason: null,
+                        delta: {
+                            functionCall: {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                name: undefined,
+                                arguments: '{"',
+                            },
+                        },
+                    },
+                    {
+                        index: 0,
+                        finishReason: null,
+                        delta: {
+                            functionCall: {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                name: undefined,
+                                arguments: 'id":"',
+                            },
+                        },
+                    },
+                    {
+                        index: 0,
+                        finishReason: null,
+                        delta: {
+                            functionCall: {
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                name: undefined,
+                                arguments: 'ABC"}',
+                            },
+                        },
+                    },
+                    {
+                        index: 0,
+                        finishReason: 'function_call',
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        delta: {},
+                    },
+                ];
+                const completions: ChatCompletions[] = choices.map(
+                    (choice) => ({
+                        id: 'chat-cmpl-1234abc',
+                        created: new Date(),
+                        choices: [choice],
+                        promptFilterResults: [],
+                    }),
+                );
+
+                assistant.listChatCompletions.mockReturnValue(
+                    Readable.from(
+                        createAsyncIterable<ChatCompletions>(completions),
+                    ),
+                );
+            });
+
+            it('emits a "message" event from the assistant, with the function call parameters', async () => {
+                thread.run(assistant);
+
+                // The "message" event is sent asynchronously, we need to wait for it to be emitted
+                await new Promise<void>((resolve, reject) => {
+                    thread.on('error', reject);
+                    thread.on('message', (message) => {
+                        if (isChatResponseAssistantToolCallsMessage(message)) {
+                            resolve();
+                        }
+                    });
+                });
+
+                expect(emitSpy).nthCalledWith(2, 'message', {
+                    role: 'assistant',
+                    content: null,
+                    toolCalls: [
+                        {
+                            id: 'emulated_call_get_customer_profile',
+                            type: 'function',
+                            function: {
+                                name: functionName,
+                                arguments: JSON.stringify({
+                                    id: 'ABC',
+                                }),
+                            },
+                        },
+                    ],
+                });
+            });
+
+            it('emits a "requires_action" event with the required action', async () => {
+                thread.run(assistant);
+
+                // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
+                await new Promise<void>((resolve, reject) => {
+                    thread.on('error', reject);
+                    thread.on('requires_action', resolve);
+                });
+
+                expect(emitSpy).nthCalledWith(
+                    4,
+                    'requires_action',
+                    expect.any(RequiredAction),
+                );
+
+                const requiredAction = emitSpy.mock
+                    .calls[2][1] as RequiredAction;
+                expect(requiredAction.toolCalls).toBeDefined();
+                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
+                    functionName,
+                );
+                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
+                    JSON.stringify({
+                        id: 'ABC',
+                    }),
+                );
+            });
+        });
+
         describe('when the completions from the assistant are a text message', () => {
             beforeEach(() => {
                 const choices: ChatChoice[] = [
