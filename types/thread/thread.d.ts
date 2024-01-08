@@ -9,11 +9,14 @@ export declare class Thread extends EventEmitter {
     private readonly messages;
     private _stream;
     private readonly converter;
+    private readonly toolEmulator;
     constructor(messages?: ChatMessage[]);
     get stream(): Readable | null;
     addMessage(message: ChatRequestMessageWithMetadata): void;
     run(assistant: Assistant): void;
     private doRun;
+    private dispatchRequiredAction;
+    private handleSubmittedToolOutputs;
     private doAddMessage;
     private emitImmediate;
 }

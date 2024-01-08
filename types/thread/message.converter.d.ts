@@ -1,6 +1,7 @@
 import type { ChatRequestMessage } from '@azure/openai';
 import type { ChatMessage } from '../message';
 export declare class ThreadMessageConverter {
+    private readonly toolEmulator;
     /**
      * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
      * so they can be sent again to the LLM.

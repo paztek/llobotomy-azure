@@ -1,0 +1,1 @@
+{"version":3,"file":"tool.emulator.d.ts","sourceRoot":"","sources":["../../src/thread/tool.emulator.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,eAAe,CAAC;AAIlD;;GAEG;AACH,qBAAa,YAAY;IACrB,0BAA0B,CAAC,YAAY,EAAE,YAAY,GAAG,MAAM;IAI9D,oBAAoB,CAAC,UAAU,EAAE,MAAM,GAAG,OAAO;IAIjD,yCAAyC,CAAC,UAAU,EAAE,MAAM,GAAG,MAAM;CAGxE"}

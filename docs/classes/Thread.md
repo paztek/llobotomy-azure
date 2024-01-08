@@ -19,6 +19,7 @@
 - [\_stream](Thread.md#_stream)
 - [converter](Thread.md#converter)
 - [messages](Thread.md#messages)
+- [toolEmulator](Thread.md#toolemulator)
 - [captureRejectionSymbol](Thread.md#capturerejectionsymbol)
 - [captureRejections](Thread.md#capturerejections)
 - [defaultMaxListeners](Thread.md#defaultmaxlisteners)
@@ -33,12 +34,14 @@
 - [[captureRejectionSymbol]](Thread.md#[capturerejectionsymbol])
 - [addListener](Thread.md#addlistener)
 - [addMessage](Thread.md#addmessage)
+- [dispatchRequiredAction](Thread.md#dispatchrequiredaction)
 - [doAddMessage](Thread.md#doaddmessage)
 - [doRun](Thread.md#dorun)
 - [emit](Thread.md#emit)
 - [emitImmediate](Thread.md#emitimmediate)
 - [eventNames](Thread.md#eventnames)
 - [getMaxListeners](Thread.md#getmaxlisteners)
+- [handleSubmittedToolOutputs](Thread.md#handlesubmittedtooloutputs)
 - [listenerCount](Thread.md#listenercount)
 - [listeners](Thread.md#listeners)
 - [off](Thread.md#off)
@@ -77,7 +80,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L21)
+[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L24)
 
 ## Properties
 
@@ -87,7 +90,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:18](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L18)
+[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L20)
 
 ___
 
@@ -97,7 +100,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:19](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L19)
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L21)
 
 ___
 
@@ -107,7 +110,17 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L21)
+[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L24)
+
+___
+
+### toolEmulator
+
+• `Private` `Readonly` **toolEmulator**: `ToolEmulator`
+
+#### Defined in
+
+[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L22)
 
 ___
 
@@ -240,7 +253,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L25)
+[src/thread/thread.ts:28](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L28)
 
 ## Methods
 
@@ -317,7 +330,28 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L33)
+[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L36)
+
+___
+
+### dispatchRequiredAction
+
+▸ `Private` **dispatchRequiredAction**(`toolCalls`, `assistant`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `toolCalls` | `ChatCompletionsFunctionToolCall`[] |
+| `assistant` | [`Assistant`](Assistant.md) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:173](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L173)
 
 ___
 
@@ -337,7 +371,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:153](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L153)
+[src/thread/thread.ts:204](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L204)
 
 ___
 
@@ -357,7 +391,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:44](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L44)
+[src/thread/thread.ts:47](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L47)
 
 ___
 
@@ -445,7 +479,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:167](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L167)
+[src/thread/thread.ts:218](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L218)
 
 ___
 
@@ -510,6 +544,27 @@ EventEmitter.getMaxListeners
 #### Defined in
 
 node_modules/@types/node/events.d.ts:722
+
+___
+
+### handleSubmittedToolOutputs
+
+▸ `Private` **handleSubmittedToolOutputs**(`toolOutputs`, `assistant`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `toolOutputs` | [`ToolOutput`](../interfaces/ToolOutput.md)[] |
+| `assistant` | [`Assistant`](Assistant.md) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/thread/thread.ts:184](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L184)
 
 ___
 
@@ -1024,7 +1079,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/thread/thread.ts#L37)
+[src/thread/thread.ts:40](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/thread/thread.ts#L40)
 
 ___
 

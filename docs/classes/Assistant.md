@@ -14,9 +14,11 @@
 - [deployment](Assistant.md#deployment)
 - [instructions](Assistant.md#instructions)
 - [tools](Assistant.md#tools)
+- [useLegacyFunctions](Assistant.md#uselegacyfunctions)
 
 ### Methods
 
+- [getChatCompletions](Assistant.md#getchatcompletions)
 - [listChatCompletions](Assistant.md#listchatcompletions)
 
 ## Constructors
@@ -33,7 +35,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L24)
+[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L26)
 
 ## Properties
 
@@ -43,7 +45,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L18)
+[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L19)
 
 ___
 
@@ -53,7 +55,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L22)
+[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L23)
 
 ___
 
@@ -63,7 +65,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L20)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L21)
 
 ___
 
@@ -73,9 +75,39 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L22)
+
+___
+
+### useLegacyFunctions
+
+• `Private` `Readonly` **useLegacyFunctions**: `boolean`
+
+#### Defined in
+
+[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L24)
 
 ## Methods
+
+### getChatCompletions
+
+▸ **getChatCompletions**(`messages`): `Promise`<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `messages` | `ChatRequestMessage`[] |
+
+#### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/assistant/assistant.ts:66](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L66)
+
+___
 
 ### listChatCompletions
 
@@ -93,4 +125,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:31](https://github.com/paztek/llobotomy-azure/blob/2adb980/src/assistant/assistant.ts#L31)
+[src/assistant/assistant.ts:34](https://github.com/paztek/llobotomy-azure/blob/7f25ee2/src/assistant/assistant.ts#L34)

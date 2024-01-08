@@ -7,9 +7,9 @@
 [![Package dependency count](https://badgen.net/bundlephobia/dependency-count/reactllobotomy-azure)](https://bundlephobia.com/package/llobotomy-azure)
 
 This library is a temporary solution for those of us who are using Azure Open AI APIs instead of the public Open AI APIs.
-At the time of this writing, the Azure OpenAI API doesn't expose the Assistants API so we're emulating it using the other APIs (mainly Chat Completions with Function Calling).
+At the time of this writing, the Azure OpenAI API doesn't expose the Assistants API so we're emulating it using the other APIs (mainly Chat Completions with Tools / Function Calling).
 
-The library aims at having roughly the same public API as my other NPM package [LLobotoMy](https://github.com/paztek/llobotomy).
+The library aims at having roughly the same public API as my other NPM package [LLobotoMy](https://github.com/paztek/llobotomy). Although the LLobotoMy lib is actually lagging behind at the moment because I've been more focused on supporting Azure Open AI APIs.
 
 ## Installation
 
