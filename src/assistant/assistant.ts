@@ -31,7 +31,9 @@ export class Assistant {
         this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
 
-    listChatCompletions(messages: ChatRequestMessage[]): Readable {
+    async streamChatCompletions(
+        messages: ChatRequestMessage[],
+    ): Promise<Readable> {
         // Prepend the messages with our instructions as a "system" message
         const systemMessage: ChatRequestSystemMessage = {
             role: 'system',
@@ -52,7 +54,7 @@ export class Assistant {
             }
         }
 
-        const completions = this.client.listChatCompletions(
+        const completions = await this.client.streamChatCompletions(
             this.deployment,
             messages,
             options,

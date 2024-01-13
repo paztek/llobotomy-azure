@@ -13,7 +13,7 @@ export declare class Thread extends EventEmitter {
     constructor(messages?: ChatMessage[]);
     get stream(): Readable | null;
     addMessage(message: ChatRequestMessageWithMetadata): void;
-    run(assistant: Assistant): void;
+    run(assistant: Assistant): Promise<void>;
     private doRun;
     private dispatchRequiredAction;
     private handleSubmittedToolOutputs;

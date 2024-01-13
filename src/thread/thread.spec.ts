@@ -63,7 +63,9 @@ describe('Thread', () => {
 
     describe('run', () => {
         beforeEach(() => {
-            assistant.listChatCompletions.mockReturnValue(Readable.from([]));
+            assistant.streamChatCompletions.mockResolvedValue(
+                Readable.from([]),
+            );
         });
 
         it('emits an "in_progress" event', async () => {
@@ -181,7 +183,7 @@ describe('Thread', () => {
                     }),
                 );
 
-                assistant.listChatCompletions.mockReturnValue(
+                assistant.streamChatCompletions.mockResolvedValue(
                     Readable.from(
                         createAsyncIterable<ChatCompletions>(completions),
                     ),
@@ -189,7 +191,7 @@ describe('Thread', () => {
             });
 
             it('emits a "message" event from the assistant, with the tool calls parameters', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "message" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -420,7 +422,7 @@ describe('Thread', () => {
                     }),
                 );
 
-                assistant.listChatCompletions.mockReturnValue(
+                assistant.streamChatCompletions.mockResolvedValue(
                     Readable.from(
                         createAsyncIterable<ChatCompletions>(completions),
                     ),
@@ -428,7 +430,7 @@ describe('Thread', () => {
             });
 
             it('emits a "message" event from the assistant, with the tool calls parameters', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "message" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -469,7 +471,7 @@ describe('Thread', () => {
             });
 
             it('emits a "requires_action" event with the required action', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -570,7 +572,7 @@ describe('Thread', () => {
                     }),
                 );
 
-                assistant.listChatCompletions.mockReturnValue(
+                assistant.streamChatCompletions.mockResolvedValue(
                     Readable.from(
                         createAsyncIterable<ChatCompletions>(completions),
                     ),
@@ -578,7 +580,7 @@ describe('Thread', () => {
             });
 
             it('emits a "message" event from the assistant, with the function call parameters', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "message" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -609,7 +611,7 @@ describe('Thread', () => {
             });
 
             it('emits a "requires_action" event with the required action', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -697,7 +699,7 @@ describe('Thread', () => {
                     }),
                 );
 
-                assistant.listChatCompletions.mockReturnValue(
+                assistant.streamChatCompletions.mockResolvedValue(
                     Readable.from(
                         createAsyncIterable<ChatCompletions>(completions),
                     ),
@@ -705,7 +707,7 @@ describe('Thread', () => {
             });
 
             it('emits a "message" event from the assistant, with the text message', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "message" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -725,7 +727,7 @@ describe('Thread', () => {
             });
 
             it('emits a "completed" event', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "completed" event is sent asynchronously, we need to wait for it to be emitted
                 await new Promise<void>((resolve, reject) => {
@@ -739,7 +741,7 @@ describe('Thread', () => {
             it('also writes to the stream of the thread', async () => {
                 let response = '';
 
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 thread.stream?.on('data', (data) => {
                     response += data;
@@ -807,7 +809,7 @@ describe('Thread', () => {
                     }),
                 );
 
-                assistant.listChatCompletions.mockReturnValue(
+                assistant.streamChatCompletions.mockResolvedValue(
                     Readable.from(
                         createAsyncIterable<ChatCompletions>(completions),
                     ),
@@ -815,7 +817,7 @@ describe('Thread', () => {
             });
 
             it('emits a message event from the tool with the tool output', async () => {
-                thread.run(assistant);
+                await thread.run(assistant);
 
                 // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
                 const requiredAction = await new Promise<RequiredAction>(
@@ -856,7 +858,7 @@ describe('Thread', () => {
                 };
 
                 it('includes the metadata in the emitted tool message', async () => {
-                    thread.run(assistant);
+                    await thread.run(assistant);
 
                     // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
                     const requiredAction = await new Promise<RequiredAction>(

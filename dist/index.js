@@ -17,7 +17,7 @@ class Assistant {
         this.deployment = params.deployment;
         this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
-    listChatCompletions(messages) {
+    async streamChatCompletions(messages) {
         // Prepend the messages with our instructions as a "system" message
         const systemMessage = {
             role: 'system',
@@ -36,7 +36,7 @@ class Assistant {
                 options.tools = this.tools;
             }
         }
-        const completions = this.client.listChatCompletions(this.deployment, messages, options);
+        const completions = await this.client.streamChatCompletions(this.deployment, messages, options);
         return stream.Readable.from(completions, {
             objectMode: true,
         });
@@ -167,16 +167,16 @@ class Thread extends EventEmitter {
     addMessage(message) {
         this.doAddMessage(message);
     }
-    run(assistant) {
+    async run(assistant) {
         this._stream = new stream.Readable({
             read: () => { },
         });
-        this.doRun(assistant);
+        return this.doRun(assistant);
     }
-    doRun(assistant) {
+    async doRun(assistant) {
         this.emitImmediate('in_progress');
         const messages = this.converter.convert(this.messages);
-        const stream = assistant.listChatCompletions(messages);
+        const stream = await assistant.streamChatCompletions(messages);
         let content = null;
         const toolCalls = [];
         let functionCall = undefined;
@@ -283,10 +283,10 @@ class Thread extends EventEmitter {
     }
     dispatchRequiredAction(toolCalls, assistant) {
         const requiredAction = new RequiredAction(toolCalls);
-        requiredAction.on('submitting', (toolOutputs) => this.handleSubmittedToolOutputs(toolOutputs, assistant));
+        requiredAction.on('submitting', async (toolOutputs) => this.handleSubmittedToolOutputs(toolOutputs, assistant));
         this.emitImmediate('requires_action', requiredAction);
     }
-    handleSubmittedToolOutputs(toolOutputs, assistant) {
+    async handleSubmittedToolOutputs(toolOutputs, assistant) {
         // Adds the tool outputs to the messages
         for (const toolOutput of toolOutputs) {
             const message = {
@@ -299,7 +299,7 @@ class Thread extends EventEmitter {
             }
             this.doAddMessage(message);
         }
-        this.doRun(assistant);
+        return this.doRun(assistant);
     }
     doAddMessage(message) {
         this.messages.push(message);

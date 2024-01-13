@@ -37,19 +37,19 @@ export class Thread extends EventEmitter {
         this.doAddMessage(message);
     }
 
-    run(assistant: Assistant): void {
+    async run(assistant: Assistant): Promise<void> {
         this._stream = new Readable({
             read: () => {},
         });
-        this.doRun(assistant);
+        return this.doRun(assistant);
     }
 
-    private doRun(assistant: Assistant): void {
+    private async doRun(assistant: Assistant): Promise<void> {
         this.emitImmediate('in_progress');
 
         const messages = this.converter.convert(this.messages);
 
-        const stream = assistant.listChatCompletions(messages);
+        const stream = await assistant.streamChatCompletions(messages);
 
         let content: string | null = null;
         const toolCalls: ChatCompletionsToolCall[] = [];
@@ -175,16 +175,16 @@ export class Thread extends EventEmitter {
         assistant: Assistant,
     ): void {
         const requiredAction = new RequiredAction(toolCalls);
-        requiredAction.on('submitting', (toolOutputs: ToolOutput[]) =>
+        requiredAction.on('submitting', async (toolOutputs: ToolOutput[]) =>
             this.handleSubmittedToolOutputs(toolOutputs, assistant),
         );
         this.emitImmediate('requires_action', requiredAction);
     }
 
-    private handleSubmittedToolOutputs(
+    private async handleSubmittedToolOutputs(
         toolOutputs: ToolOutput[],
         assistant: Assistant,
-    ): void {
+    ): Promise<void> {
         // Adds the tool outputs to the messages
         for (const toolOutput of toolOutputs) {
             const message: ChatRequestToolMessageWithMetadata = {
@@ -198,7 +198,7 @@ export class Thread extends EventEmitter {
             this.doAddMessage(message);
         }
 
-        this.doRun(assistant);
+        return this.doRun(assistant);
     }
 
     private doAddMessage(

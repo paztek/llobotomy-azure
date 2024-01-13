@@ -16,7 +16,7 @@ export declare class Assistant {
     private readonly deployment;
     private readonly useLegacyFunctions;
     constructor(params: AssistantCreateParams);
-    listChatCompletions(messages: ChatRequestMessage[]): Readable;
+    streamChatCompletions(messages: ChatRequestMessage[]): Promise<Readable>;
     getChatCompletions(messages: ChatRequestMessage[]): Promise<void>;
 }
 //# sourceMappingURL=assistant.d.ts.map
