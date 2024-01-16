@@ -41,7 +41,12 @@ export class Thread extends EventEmitter {
         this._stream = new Readable({
             read: () => {},
         });
-        return this.doRun(assistant);
+
+        try {
+            return await this.doRun(assistant);
+        } catch (e) {
+            this.emitImmediate('error', e);
+        }
     }
 
     private async doRun(assistant: Assistant): Promise<void> {
@@ -62,12 +67,14 @@ export class Thread extends EventEmitter {
             }
             const choice = completion.choices[0];
             if (!choice) {
-                throw new Error('No completions returned');
+                const err = new Error('No completions returned');
+                return this.emitImmediate('error', err);
             }
 
             const delta = choice.delta;
             if (!delta) {
-                throw new Error('No delta returned');
+                const err = new Error('No delta returned');
+                return this.emitImmediate('error', err);
             }
 
             if (delta.content) {
@@ -75,7 +82,8 @@ export class Thread extends EventEmitter {
 
                 // Write also to the stream of the thread
                 if (!this._stream) {
-                    throw new Error('No stream available');
+                    const err = new Error('No stream available');
+                    return this.emitImmediate('error', err);
                 }
                 this._stream?.push(delta.content);
             }
@@ -157,15 +165,18 @@ export class Thread extends EventEmitter {
                 case 'tool_calls':
                 case 'function_call': {
                     if (message.toolCalls.length === 0) {
-                        throw new Error('No tool calls returned');
+                        const err = new Error('No tool calls returned');
+                        return this.emitImmediate('error', err);
                     }
                     this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
-                default:
-                    throw new Error(
+                default: {
+                    const err = new Error(
                         `Unknown finish reason ${choice.finishReason}`,
                     );
+                    return this.emitImmediate('error', err);
+                }
             }
         });
     }
@@ -216,9 +227,13 @@ export class Thread extends EventEmitter {
     }
 
     private emitImmediate(event: string, ...args: unknown[]): void {
-        setImmediate(() => {
+        if (event === 'error') {
             this.emit(event, ...args);
-        });
+        } else {
+            setImmediate(() => {
+                this.emit(event, ...args);
+            });
+        }
     }
 }
 

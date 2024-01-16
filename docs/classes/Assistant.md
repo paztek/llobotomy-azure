@@ -18,7 +18,6 @@
 
 ### Methods
 
-- [getChatCompletions](Assistant.md#getchatcompletions)
 - [streamChatCompletions](Assistant.md#streamchatcompletions)
 
 ## Constructors
@@ -35,7 +34,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L26)
+[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L26)
 
 ## Properties
 
@@ -45,7 +44,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L19)
+[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L19)
 
 ___
 
@@ -55,7 +54,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L23)
+[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L23)
 
 ___
 
@@ -65,7 +64,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L21)
 
 ___
 
@@ -75,7 +74,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L22)
+[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L22)
 
 ___
 
@@ -85,29 +84,9 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L24)
+[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L24)
 
 ## Methods
-
-### getChatCompletions
-
-▸ **getChatCompletions**(`messages`): `Promise`<`void`\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `messages` | `ChatRequestMessage`[] |
-
-#### Returns
-
-`Promise`<`void`\>
-
-#### Defined in
-
-[src/assistant/assistant.ts:68](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L68)
-
-___
 
 ### streamChatCompletions
 
@@ -125,4 +104,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:34](https://github.com/paztek/llobotomy-azure/blob/d9dfa8f/src/assistant/assistant.ts#L34)
+[src/assistant/assistant.ts:34](https://github.com/paztek/llobotomy-azure/blob/26afba8/src/assistant/assistant.ts#L34)

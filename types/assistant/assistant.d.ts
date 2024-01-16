@@ -17,6 +17,5 @@ export declare class Assistant {
     private readonly useLegacyFunctions;
     constructor(params: AssistantCreateParams);
     streamChatCompletions(messages: ChatRequestMessage[]): Promise<Readable>;
-    getChatCompletions(messages: ChatRequestMessage[]): Promise<void>;
 }
 //# sourceMappingURL=assistant.d.ts.map

@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.3
+ * llobotomy-azure v0.0.4
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
@@ -36,32 +36,8 @@ class Assistant {
                 options.tools = this.tools;
             }
         }
-        const completions = await this.client.streamChatCompletions(this.deployment, messages, options);
-        return stream.Readable.from(completions, {
-            objectMode: true,
-        });
-    }
-    async getChatCompletions(messages) {
-        // Prepend the messages with our instructions as a "system" message
-        const systemMessage = {
-            role: 'system',
-            content: this.instructions,
-        };
-        messages = [systemMessage, ...messages];
-        const options = {};
-        if (this.tools.length > 0) {
-            if (this.useLegacyFunctions) {
-                // Convert tools to functions
-                options.functions = this.tools.map((tool) => {
-                    return tool.function;
-                });
-            }
-            else {
-                options.tools = this.tools;
-            }
-        }
-        const completions = await this.client.getChatCompletions(this.deployment, messages, options);
-        console.log('Completions:', completions);
+        const events = await this.client.streamChatCompletions(this.deployment, messages, options);
+        return stream.Readable.from(events);
     }
 }
 
@@ -171,7 +147,12 @@ class Thread extends EventEmitter {
         this._stream = new stream.Readable({
             read: () => { },
         });
-        return this.doRun(assistant);
+        try {
+            return await this.doRun(assistant);
+        }
+        catch (e) {
+            this.emitImmediate('error', e);
+        }
     }
     async doRun(assistant) {
         this.emitImmediate('in_progress');
@@ -187,17 +168,20 @@ class Thread extends EventEmitter {
             }
             const choice = completion.choices[0];
             if (!choice) {
-                throw new Error('No completions returned');
+                const err = new Error('No completions returned');
+                return this.emitImmediate('error', err);
             }
             const delta = choice.delta;
             if (!delta) {
-                throw new Error('No delta returned');
+                const err = new Error('No delta returned');
+                return this.emitImmediate('error', err);
             }
             if (delta.content) {
                 content = content ? content + delta.content : delta.content;
                 // Write also to the stream of the thread
                 if (!this._stream) {
-                    throw new Error('No stream available');
+                    const err = new Error('No stream available');
+                    return this.emitImmediate('error', err);
                 }
                 this._stream?.push(delta.content);
             }
@@ -271,13 +255,16 @@ class Thread extends EventEmitter {
                 case 'tool_calls':
                 case 'function_call': {
                     if (message.toolCalls.length === 0) {
-                        throw new Error('No tool calls returned');
+                        const err = new Error('No tool calls returned');
+                        return this.emitImmediate('error', err);
                     }
                     this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
-                default:
-                    throw new Error(`Unknown finish reason ${choice.finishReason}`);
+                default: {
+                    const err = new Error(`Unknown finish reason ${choice.finishReason}`);
+                    return this.emitImmediate('error', err);
+                }
             }
         });
     }
@@ -312,9 +299,14 @@ class Thread extends EventEmitter {
         }
     }
     emitImmediate(event, ...args) {
-        setImmediate(() => {
+        if (event === 'error') {
             this.emit(event, ...args);
-        });
+        }
+        else {
+            setImmediate(() => {
+                this.emit(event, ...args);
+            });
+        }
     }
 }
 class RequiredAction extends EventEmitter {
