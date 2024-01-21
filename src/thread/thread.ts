@@ -21,15 +21,14 @@ export class Thread extends EventEmitter {
     private readonly converter = new ThreadMessageConverter();
     private readonly toolEmulator = new ToolEmulator();
 
-    constructor(private readonly messages: ChatMessage[] = []) {
+    constructor(
+        public readonly id: string,
+        private readonly messages: ChatMessage[] = [],
+    ) {
         super();
     }
 
     get stream(): Readable | null {
-        if (!this._stream) {
-            return null;
-        }
-
         return this._stream;
     }
 
@@ -38,10 +37,6 @@ export class Thread extends EventEmitter {
     }
 
     async run(assistant: Assistant): Promise<void> {
-        this._stream = new Readable({
-            read: () => {},
-        });
-
         try {
             return await this.doRun(assistant);
         } catch (e) {
@@ -50,6 +45,10 @@ export class Thread extends EventEmitter {
     }
 
     private async doRun(assistant: Assistant): Promise<void> {
+        this._stream = new Readable({
+            read: () => {},
+        });
+
         this.emitImmediate('in_progress');
 
         const messages = this.converter.convert(this.messages);

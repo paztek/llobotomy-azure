@@ -127,26 +127,21 @@ class ThreadMessageConverter {
 }
 
 class Thread extends EventEmitter {
-    constructor(messages = []) {
+    constructor(id, messages = []) {
         super();
+        this.id = id;
         this.messages = messages;
         this._stream = null;
         this.converter = new ThreadMessageConverter();
         this.toolEmulator = new ToolEmulator();
     }
     get stream() {
-        if (!this._stream) {
-            return null;
-        }
         return this._stream;
     }
     addMessage(message) {
         this.doAddMessage(message);
     }
     async run(assistant) {
-        this._stream = new stream.Readable({
-            read: () => { },
-        });
         try {
             return await this.doRun(assistant);
         }
@@ -155,13 +150,16 @@ class Thread extends EventEmitter {
         }
     }
     async doRun(assistant) {
+        this._stream = new stream.Readable({
+            read: () => { },
+        });
         this.emitImmediate('in_progress');
         const messages = this.converter.convert(this.messages);
-        const stream = await assistant.streamChatCompletions(messages);
+        const stream$1 = await assistant.streamChatCompletions(messages);
         let content = null;
         const toolCalls = [];
         let functionCall = undefined;
-        stream.on('data', (completion) => {
+        stream$1.on('data', (completion) => {
             if (!completion.id || completion.id === '') {
                 // First completion is empty when using old models like gpt-35-turbo
                 return;

@@ -17,8 +17,10 @@ describe('Thread', () => {
     const assistant = mock<Assistant>();
     let emitSpy: jest.SpyInstance;
 
+    const id = 'my id';
+
     beforeEach(() => {
-        thread = new Thread();
+        thread = new Thread(id);
 
         emitSpy = jest.spyOn(thread, 'emit');
     });

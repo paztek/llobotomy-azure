@@ -125,26 +125,21 @@ class ThreadMessageConverter {
 }
 
 class Thread extends EventEmitter {
-    constructor(messages = []) {
+    constructor(id, messages = []) {
         super();
+        this.id = id;
         this.messages = messages;
         this._stream = null;
         this.converter = new ThreadMessageConverter();
         this.toolEmulator = new ToolEmulator();
     }
     get stream() {
-        if (!this._stream) {
-            return null;
-        }
         return this._stream;
     }
     addMessage(message) {
         this.doAddMessage(message);
     }
     async run(assistant) {
-        this._stream = new Readable({
-            read: () => { },
-        });
         try {
             return await this.doRun(assistant);
         }
@@ -153,6 +148,9 @@ class Thread extends EventEmitter {
         }
     }
     async doRun(assistant) {
+        this._stream = new Readable({
+            read: () => { },
+        });
         this.emitImmediate('in_progress');
         const messages = this.converter.convert(this.messages);
         const stream = await assistant.streamChatCompletions(messages);

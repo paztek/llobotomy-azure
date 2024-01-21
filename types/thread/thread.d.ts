@@ -6,11 +6,12 @@ import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 import type { ChatMessage, ChatRequestMessageWithMetadata } from '../message';
 export declare class Thread extends EventEmitter {
+    readonly id: string;
     private readonly messages;
     private _stream;
     private readonly converter;
     private readonly toolEmulator;
-    constructor(messages?: ChatMessage[]);
+    constructor(id: string, messages?: ChatMessage[]);
     get stream(): Readable | null;
     addMessage(message: ChatRequestMessageWithMetadata): void;
     run(assistant: Assistant): Promise<void>;

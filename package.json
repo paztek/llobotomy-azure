@@ -1,6 +1,6 @@
 {
     "name": "llobotomy-azure",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Thin wrapper around the Azure OpenAI Chat Completions API + Tools / Function Calling to emulate the missing Assistants API",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
