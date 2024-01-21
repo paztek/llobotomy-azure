@@ -16,10 +16,10 @@
 
 ### Properties
 
+- [\_messages](Thread.md#_messages)
 - [\_stream](Thread.md#_stream)
 - [converter](Thread.md#converter)
 - [id](Thread.md#id)
-- [messages](Thread.md#messages)
 - [toolEmulator](Thread.md#toolemulator)
 - [captureRejectionSymbol](Thread.md#capturerejectionsymbol)
 - [captureRejections](Thread.md#capturerejections)
@@ -28,6 +28,7 @@
 
 ### Accessors
 
+- [messages](Thread.md#messages)
 - [stream](Thread.md#stream)
 
 ### Methods
@@ -82,9 +83,19 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:24](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L24)
+[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L25)
 
 ## Properties
+
+### \_messages
+
+• `Private` `Readonly` **\_messages**: [`ChatMessage`](../README.md#chatmessage)[] = `[]`
+
+#### Defined in
+
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L21)
+
+___
 
 ### \_stream
 
@@ -92,17 +103,17 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L20)
+[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L20)
 
 ___
 
 ### converter
 
-• `Private` `Readonly` **converter**: `ThreadMessageConverter`
+• `Private` `Readonly` **converter**: [`ThreadMessageConverter`](ThreadMessageConverter.md)
 
 #### Defined in
 
-[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L21)
+[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L22)
 
 ___
 
@@ -112,17 +123,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L25)
-
-___
-
-### messages
-
-• `Private` `Readonly` **messages**: [`ChatMessage`](../README.md#chatmessage)[] = `[]`
-
-#### Defined in
-
-[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L26)
+[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L26)
 
 ___
 
@@ -132,7 +133,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L22)
+[src/thread/thread.ts:23](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L23)
 
 ___
 
@@ -255,6 +256,20 @@ node_modules/@types/node/events.d.ts:395
 
 ## Accessors
 
+### messages
+
+• `get` **messages**(): [`ChatMessage`](../README.md#chatmessage)[]
+
+#### Returns
+
+[`ChatMessage`](../README.md#chatmessage)[]
+
+#### Defined in
+
+[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L37)
+
+___
+
 ### stream
 
 • `get` **stream**(): ``null`` \| `Readable`
@@ -265,7 +280,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:31](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L31)
+[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L33)
 
 ## Methods
 
@@ -342,7 +357,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:35](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L35)
+[src/thread/thread.ts:42](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L42)
 
 ___
 
@@ -363,7 +378,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:183](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L183)
+[src/thread/thread.ts:190](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L190)
 
 ___
 
@@ -383,7 +398,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:214](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L214)
+[src/thread/thread.ts:221](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L221)
 
 ___
 
@@ -403,7 +418,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:47](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L47)
+[src/thread/thread.ts:54](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L54)
 
 ___
 
@@ -491,7 +506,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:228](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L228)
+[src/thread/thread.ts:235](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L235)
 
 ___
 
@@ -576,7 +591,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:194](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L194)
+[src/thread/thread.ts:201](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L201)
 
 ___
 
@@ -1091,7 +1106,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:39](https://github.com/paztek/llobotomy-azure/blob/9df98ed/src/thread/thread.ts#L39)
+[src/thread/thread.ts:46](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L46)
 
 ___
 

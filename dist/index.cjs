@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.4
+ * llobotomy-azure v0.0.5
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
@@ -130,13 +130,18 @@ class Thread extends EventEmitter {
     constructor(id, messages = []) {
         super();
         this.id = id;
-        this.messages = messages;
         this._stream = null;
+        this._messages = [];
         this.converter = new ThreadMessageConverter();
         this.toolEmulator = new ToolEmulator();
+        this._messages = messages;
     }
     get stream() {
         return this._stream;
+    }
+    get messages() {
+        // TODO Return a deep copy
+        return this._messages;
     }
     addMessage(message) {
         this.doAddMessage(message);
@@ -154,7 +159,7 @@ class Thread extends EventEmitter {
             read: () => { },
         });
         this.emitImmediate('in_progress');
-        const messages = this.converter.convert(this.messages);
+        const messages = this.converter.convert(this._messages);
         const stream$1 = await assistant.streamChatCompletions(messages);
         let content = null;
         const toolCalls = [];
@@ -287,7 +292,7 @@ class Thread extends EventEmitter {
         return this.doRun(assistant);
     }
     doAddMessage(message) {
-        this.messages.push(message);
+        this._messages.push(message);
         this.emitImmediate('message', message);
         if (isChatRequestMessage(message)) {
             this.emitImmediate('message:request', message);
@@ -326,6 +331,7 @@ function isChatRequestMessage(m) {
 exports.Assistant = Assistant;
 exports.RequiredAction = RequiredAction;
 exports.Thread = Thread;
+exports.ThreadMessageConverter = ThreadMessageConverter;
 exports.isChatRequestMessage = isChatRequestMessage;
 exports.isChatResponseMessage = isChatResponseMessage;
 //# sourceMappingURL=index.cjs.map

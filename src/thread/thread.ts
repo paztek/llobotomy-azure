@@ -18,18 +18,25 @@ import { ToolEmulator } from './tool.emulator';
 
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
+    private readonly _messages: ChatMessage[] = [];
     private readonly converter = new ThreadMessageConverter();
     private readonly toolEmulator = new ToolEmulator();
 
     constructor(
         public readonly id: string,
-        private readonly messages: ChatMessage[] = [],
+        messages: ChatMessage[] = [],
     ) {
         super();
+        this._messages = messages;
     }
 
     get stream(): Readable | null {
         return this._stream;
+    }
+
+    get messages(): ChatMessage[] {
+        // TODO Return a deep copy
+        return this._messages;
     }
 
     addMessage(message: ChatRequestMessageWithMetadata): void {
@@ -51,7 +58,7 @@ export class Thread extends EventEmitter {
 
         this.emitImmediate('in_progress');
 
-        const messages = this.converter.convert(this.messages);
+        const messages = this.converter.convert(this._messages);
 
         const stream = await assistant.streamChatCompletions(messages);
 
@@ -214,7 +221,7 @@ export class Thread extends EventEmitter {
     private doAddMessage(
         message: ChatRequestMessage | ChatResponseMessage,
     ): void {
-        this.messages.push(message);
+        this._messages.push(message);
 
         this.emitImmediate('message', message);
 
