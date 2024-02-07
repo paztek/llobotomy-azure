@@ -153,6 +153,9 @@ class Thread extends EventEmitter {
         }
     }
     async doRun(assistant) {
+        if (this._stream) {
+            this._stream.push(null);
+        }
         this._stream = new Readable({
             read: () => { },
         });

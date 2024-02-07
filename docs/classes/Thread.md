@@ -83,7 +83,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L25)
+[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L25)
 
 ## Properties
 
@@ -93,7 +93,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L21)
+[src/thread/thread.ts:21](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L21)
 
 ___
 
@@ -103,7 +103,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L20)
+[src/thread/thread.ts:20](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L20)
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L22)
+[src/thread/thread.ts:22](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L22)
 
 ___
 
@@ -123,7 +123,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L26)
+[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L26)
 
 ___
 
@@ -133,7 +133,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:23](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L23)
+[src/thread/thread.ts:23](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L23)
 
 ___
 
@@ -266,7 +266,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L37)
+[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L37)
 
 ___
 
@@ -280,7 +280,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L33)
+[src/thread/thread.ts:33](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L33)
 
 ## Methods
 
@@ -357,7 +357,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:42](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L42)
+[src/thread/thread.ts:42](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L42)
 
 ___
 
@@ -378,7 +378,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:190](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L190)
+[src/thread/thread.ts:194](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L194)
 
 ___
 
@@ -398,7 +398,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:221](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L221)
+[src/thread/thread.ts:225](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L225)
 
 ___
 
@@ -418,7 +418,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:54](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L54)
+[src/thread/thread.ts:54](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L54)
 
 ___
 
@@ -506,7 +506,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:235](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L235)
+[src/thread/thread.ts:239](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L239)
 
 ___
 
@@ -591,7 +591,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:201](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L201)
+[src/thread/thread.ts:205](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L205)
 
 ___
 
@@ -1106,7 +1106,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:46](https://github.com/paztek/llobotomy-azure/blob/debbf07/src/thread/thread.ts#L46)
+[src/thread/thread.ts:46](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/thread.ts#L46)
 
 ___
 

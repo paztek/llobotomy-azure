@@ -52,6 +52,10 @@ export class Thread extends EventEmitter {
     }
 
     private async doRun(assistant: Assistant): Promise<void> {
+        if (this._stream) {
+            this._stream.push(null);
+        }
+
         this._stream = new Readable({
             read: () => {},
         });
