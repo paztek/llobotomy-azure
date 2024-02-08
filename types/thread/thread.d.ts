@@ -21,11 +21,19 @@ export declare class Thread extends EventEmitter {
     private handleSubmittedToolOutputs;
     private doAddMessage;
     private emitImmediate;
+    /**
+     * Errors come in all shapes and sizes depending on whether they are raised by the API (authn & authz errors),
+     * the model (invalid tool definitions, maximum content length exceeded, etc.) or by the Azure content filtering
+     *
+     * We try here to handle most of them and return a consistent error type
+     */
+    private buildError;
 }
 export declare class RequiredAction extends EventEmitter {
     readonly toolCalls: ChatCompletionsToolCall[];
-    constructor(toolCalls: ChatCompletionsToolCall[]);
-    submitToolOutputs(toolOutputs: ToolOutput[]): void;
+    private readonly callback;
+    constructor(toolCalls: ChatCompletionsToolCall[], callback: (toolOutputs: ToolOutput[]) => Promise<void>);
+    submitToolOutputs(toolOutputs: ToolOutput[]): Promise<void>;
 }
 export interface ToolOutput {
     callId: string;

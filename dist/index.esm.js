@@ -39,6 +39,54 @@ class Assistant {
     }
 }
 
+/**
+ * See https://stackoverflow.com/a/41102306/674722 and
+ * https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
+ * for why we need to set the prototype of the error classes.
+ */
+class AccessDeniedError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+class InvalidRequestError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+class ContextLengthExceededError extends InvalidRequestError {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+class ContentFilterError extends InvalidRequestError {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+class UnknownError extends Error {
+    constructor(message = 'Unknown error') {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+class InvalidToolOutputsError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+
 const EMULATED_CALL_PREFIX = 'emulated_call_';
 /**
  * Helps with the conversion of tool calls to function calls and vice versa.
@@ -161,7 +209,14 @@ class Thread extends EventEmitter {
         });
         this.emitImmediate('in_progress');
         const messages = this.converter.convert(this._messages);
-        const stream = await assistant.streamChatCompletions(messages);
+        let stream;
+        try {
+            stream = await assistant.streamChatCompletions(messages);
+        }
+        catch (e) {
+            const error = this.buildError(e);
+            return this.emitImmediate('error', error);
+        }
         let content = null;
         const toolCalls = [];
         let functionCall = undefined;
@@ -183,10 +238,6 @@ class Thread extends EventEmitter {
             if (delta.content) {
                 content = content ? content + delta.content : delta.content;
                 // Write also to the stream of the thread
-                if (!this._stream) {
-                    const err = new Error('No stream available');
-                    return this.emitImmediate('error', err);
-                }
                 this._stream?.push(delta.content);
             }
             // Merge toolCalls
@@ -238,7 +289,7 @@ class Thread extends EventEmitter {
                     const toolCall = toolCalls[0];
                     const args = JSON.parse(toolCall.function.arguments);
                     /**
-                     * the arguments follow the structure:
+                     * The arguments follow the structure:
                      * {
                      *     tool_uses: [
                      *          {
@@ -297,10 +348,6 @@ class Thread extends EventEmitter {
                     break;
                 case 'tool_calls':
                 case 'function_call': {
-                    if (message.toolCalls.length === 0) {
-                        const err = new Error('No tool calls returned');
-                        return this.emitImmediate('error', err);
-                    }
                     this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
@@ -312,24 +359,34 @@ class Thread extends EventEmitter {
         });
     }
     dispatchRequiredAction(toolCalls, assistant) {
-        const requiredAction = new RequiredAction(toolCalls);
-        requiredAction.on('submitting', async (toolOutputs) => this.handleSubmittedToolOutputs(toolOutputs, assistant));
+        const callback = async (toolOutputs) => this.handleSubmittedToolOutputs(toolOutputs, assistant);
+        const requiredAction = new RequiredAction(toolCalls, callback);
         this.emitImmediate('requires_action', requiredAction);
     }
     async handleSubmittedToolOutputs(toolOutputs, assistant) {
-        // Adds the tool outputs to the messages
-        for (const toolOutput of toolOutputs) {
-            const message = {
-                role: 'tool',
-                content: JSON.stringify(toolOutput.value),
-                toolCallId: toolOutput.callId,
-            };
-            if (toolOutput.metadata !== void 0) {
-                message.metadata = toolOutput.metadata;
+        try {
+            // Adds the tool outputs to the messages
+            for (const toolOutput of toolOutputs) {
+                const message = {
+                    role: 'tool',
+                    content: JSON.stringify(toolOutput.value),
+                    toolCallId: toolOutput.callId,
+                };
+                if (toolOutput.metadata !== void 0) {
+                    message.metadata = toolOutput.metadata;
+                }
+                this.doAddMessage(message);
             }
-            this.doAddMessage(message);
+            return this.doRun(assistant);
         }
-        return this.doRun(assistant);
+        catch (e) {
+            if (e instanceof Error) {
+                this.emitImmediate('error', new InvalidToolOutputsError(e.message));
+            }
+            else {
+                this.emitImmediate('error', new InvalidToolOutputsError(String(e)));
+            }
+        }
     }
     doAddMessage(message) {
         this._messages.push(message);
@@ -351,14 +408,77 @@ class Thread extends EventEmitter {
             });
         }
     }
+    /**
+     * Errors come in all shapes and sizes depending on whether they are raised by the API (authn & authz errors),
+     * the model (invalid tool definitions, maximum content length exceeded, etc.) or by the Azure content filtering
+     *
+     * We try here to handle most of them and return a consistent error type
+     */
+    buildError(e) {
+        if (!e) {
+            return new UnknownError();
+        }
+        if (typeof e === 'string') {
+            return new UnknownError(e);
+        }
+        if (typeof e === 'object' &&
+            'message' in e &&
+            typeof e.message === 'string') {
+            /**
+             * The errors that I know of have the following structure:
+             * {
+             *     message: string;
+             *     type: string | null;
+             *     code: string | null;
+             *     param: string | null;
+             *     status?: number;
+             * }
+             *
+             * For HTTP errors, only the "code" is present and looks like "401", "403", etc.
+             * For model errors, the "type" seems always present and looks like "invalid_request_error" while the "code" may be present and provide more details on why the request is invalid
+             * For content filtering errors, the "code" is "content_filter", the "type" is null and status = 400 (which is why we return a ContentFilterError that extends InvalidRequestError)
+             */
+            if ('code' in e && typeof e.code === 'string') {
+                if (isNaN(parseInt(e.code, 10))) {
+                    if (e.code === 'content_filter') {
+                        return new ContentFilterError(e.message);
+                    }
+                }
+                else {
+                    const code = parseInt(e.code, 10);
+                    switch (code) {
+                        case 400:
+                            return new InvalidRequestError(e.message);
+                        case 401:
+                        case 403: // I know the difference, we just don't care here
+                            return new AccessDeniedError(e.message);
+                        default:
+                            return new UnknownError(e.message);
+                    }
+                }
+            }
+            if ('type' in e && typeof e.type === 'string') {
+                if (e.type === 'invalid_request_error') {
+                    if ('code' in e && typeof e.code === 'string') {
+                        if (e.code === 'context_length_exceeded') {
+                            return new ContextLengthExceededError(e.message);
+                        }
+                    }
+                    return new InvalidRequestError(e.message);
+                }
+            }
+        }
+        return new UnknownError(String(e));
+    }
 }
 class RequiredAction extends EventEmitter {
-    constructor(toolCalls) {
+    constructor(toolCalls, callback) {
         super();
         this.toolCalls = toolCalls;
+        this.callback = callback;
     }
     submitToolOutputs(toolOutputs) {
-        this.emit('submitting', toolOutputs);
+        return this.callback(toolOutputs);
     }
 }
 function isChatResponseMessage(m) {
@@ -368,5 +488,5 @@ function isChatRequestMessage(m) {
     return !isChatResponseMessage(m);
 }
 
-export { Assistant, RequiredAction, Thread, ThreadMessageConverter, isChatRequestMessage, isChatResponseMessage };
+export { AccessDeniedError, Assistant, ContentFilterError, ContextLengthExceededError, InvalidRequestError, InvalidToolOutputsError, RequiredAction, Thread, ThreadMessageConverter, ToolEmulator, UnknownError, isChatRequestMessage, isChatResponseMessage };
 //# sourceMappingURL=index.esm.js.map

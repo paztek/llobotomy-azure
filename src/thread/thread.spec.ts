@@ -1013,7 +1013,7 @@ describe('Thread', () => {
                     },
                 );
 
-                requiredAction.submitToolOutputs([
+                await requiredAction.submitToolOutputs([
                     {
                         callId: toolCallId,
                         value: profile,
@@ -1054,7 +1054,7 @@ describe('Thread', () => {
                         },
                     );
 
-                    requiredAction.submitToolOutputs([
+                    await requiredAction.submitToolOutputs([
                         {
                             callId: toolCallId,
                             value: profile,

@@ -16,6 +16,7 @@
 
 ### Properties
 
+- [callback](RequiredAction.md#callback)
 - [toolCalls](RequiredAction.md#toolcalls)
 - [captureRejectionSymbol](RequiredAction.md#capturerejectionsymbol)
 - [captureRejections](RequiredAction.md#capturerejections)
@@ -53,13 +54,14 @@
 
 ### constructor
 
-• **new RequiredAction**(`toolCalls`)
+• **new RequiredAction**(`toolCalls`, `callback`)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `toolCalls` | `ChatCompletionsFunctionToolCall`[] |
+| `callback` | (`toolOutputs`: [`ToolOutput`](../interfaces/ToolOutput.md)[]) => `Promise`<`void`\> |
 
 #### Overrides
 
@@ -67,9 +69,33 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:313](https://github.com/paztek/llobotomy-azure/blob/752a9c2/src/thread/thread.ts#L313)
+[src/thread/thread.ts:402](https://github.com/paztek/llobotomy-azure/blob/5572695/src/thread/thread.ts#L402)
 
 ## Properties
+
+### callback
+
+• `Private` `Readonly` **callback**: (`toolOutputs`: [`ToolOutput`](../interfaces/ToolOutput.md)[]) => `Promise`<`void`\>
+
+#### Type declaration
+
+▸ (`toolOutputs`): `Promise`<`void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `toolOutputs` | [`ToolOutput`](../interfaces/ToolOutput.md)[] |
+
+##### Returns
+
+`Promise`<`void`\>
+
+#### Defined in
+
+[src/thread/thread.ts:404](https://github.com/paztek/llobotomy-azure/blob/5572695/src/thread/thread.ts#L404)
+
+___
 
 ### toolCalls
 
@@ -77,7 +103,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:313](https://github.com/paztek/llobotomy-azure/blob/752a9c2/src/thread/thread.ts#L313)
+[src/thread/thread.ts:403](https://github.com/paztek/llobotomy-azure/blob/5572695/src/thread/thread.ts#L403)
 
 ___
 
@@ -920,7 +946,7 @@ ___
 
 ### submitToolOutputs
 
-▸ **submitToolOutputs**(`toolOutputs`): `void`
+▸ **submitToolOutputs**(`toolOutputs`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -930,11 +956,11 @@ ___
 
 #### Returns
 
-`void`
+`Promise`<`void`\>
 
 #### Defined in
 
-[src/thread/thread.ts:317](https://github.com/paztek/llobotomy-azure/blob/752a9c2/src/thread/thread.ts#L317)
+[src/thread/thread.ts:409](https://github.com/paztek/llobotomy-azure/blob/5572695/src/thread/thread.ts#L409)
 
 ___
 

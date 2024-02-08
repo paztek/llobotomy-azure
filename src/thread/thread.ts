@@ -13,6 +13,14 @@ import type {
     ChatRequestMessageWithMetadata,
     ChatRequestToolMessageWithMetadata,
 } from '../message';
+import {
+    AccessDeniedError,
+    ContentFilterError,
+    ContextLengthExceededError,
+    InvalidRequestError,
+    InvalidToolOutputsError,
+    UnknownError,
+} from './errors';
 import { ThreadMessageConverter } from './message.converter';
 import { ToolEmulator } from './tool.emulator';
 
@@ -71,7 +79,14 @@ export class Thread extends EventEmitter {
 
         const messages = this.converter.convert(this._messages);
 
-        const stream = await assistant.streamChatCompletions(messages);
+        let stream: Readable;
+
+        try {
+            stream = await assistant.streamChatCompletions(messages);
+        } catch (e) {
+            const error = this.buildError(e);
+            return this.emitImmediate('error', error);
+        }
 
         let content: string | null = null;
         const toolCalls: ChatCompletionsToolCall[] = [];
@@ -98,10 +113,6 @@ export class Thread extends EventEmitter {
                 content = content ? content + delta.content : delta.content;
 
                 // Write also to the stream of the thread
-                if (!this._stream) {
-                    const err = new Error('No stream available');
-                    return this.emitImmediate('error', err);
-                }
                 this._stream?.push(delta.content);
             }
 
@@ -161,7 +172,7 @@ export class Thread extends EventEmitter {
                         toolCall.function.arguments,
                     ) as MultiToolUseParallelArguments;
                     /**
-                     * the arguments follow the structure:
+                     * The arguments follow the structure:
                      * {
                      *     tool_uses: [
                      *          {
@@ -236,10 +247,6 @@ export class Thread extends EventEmitter {
                     break;
                 case 'tool_calls':
                 case 'function_call': {
-                    if (message.toolCalls.length === 0) {
-                        const err = new Error('No tool calls returned');
-                        return this.emitImmediate('error', err);
-                    }
                     this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
@@ -257,10 +264,9 @@ export class Thread extends EventEmitter {
         toolCalls: ChatCompletionsToolCall[],
         assistant: Assistant,
     ): void {
-        const requiredAction = new RequiredAction(toolCalls);
-        requiredAction.on('submitting', async (toolOutputs: ToolOutput[]) =>
-            this.handleSubmittedToolOutputs(toolOutputs, assistant),
-        );
+        const callback = async (toolOutputs: ToolOutput[]) =>
+            this.handleSubmittedToolOutputs(toolOutputs, assistant);
+        const requiredAction = new RequiredAction(toolCalls, callback);
         this.emitImmediate('requires_action', requiredAction);
     }
 
@@ -268,20 +274,34 @@ export class Thread extends EventEmitter {
         toolOutputs: ToolOutput[],
         assistant: Assistant,
     ): Promise<void> {
-        // Adds the tool outputs to the messages
-        for (const toolOutput of toolOutputs) {
-            const message: ChatRequestToolMessageWithMetadata = {
-                role: 'tool',
-                content: JSON.stringify(toolOutput.value),
-                toolCallId: toolOutput.callId,
-            };
-            if (toolOutput.metadata !== void 0) {
-                message.metadata = toolOutput.metadata;
+        try {
+            // Adds the tool outputs to the messages
+            for (const toolOutput of toolOutputs) {
+                const message: ChatRequestToolMessageWithMetadata = {
+                    role: 'tool',
+                    content: JSON.stringify(toolOutput.value),
+                    toolCallId: toolOutput.callId,
+                };
+                if (toolOutput.metadata !== void 0) {
+                    message.metadata = toolOutput.metadata;
+                }
+                this.doAddMessage(message);
             }
-            this.doAddMessage(message);
-        }
 
-        return this.doRun(assistant);
+            return this.doRun(assistant);
+        } catch (e) {
+            if (e instanceof Error) {
+                this.emitImmediate(
+                    'error',
+                    new InvalidToolOutputsError(e.message),
+                );
+            } else {
+                this.emitImmediate(
+                    'error',
+                    new InvalidToolOutputsError(String(e)),
+                );
+            }
+        }
     }
 
     private doAddMessage(
@@ -307,15 +327,87 @@ export class Thread extends EventEmitter {
             });
         }
     }
+
+    /**
+     * Errors come in all shapes and sizes depending on whether they are raised by the API (authn & authz errors),
+     * the model (invalid tool definitions, maximum content length exceeded, etc.) or by the Azure content filtering
+     *
+     * We try here to handle most of them and return a consistent error type
+     */
+    private buildError(e: unknown): Error {
+        if (!e) {
+            return new UnknownError();
+        }
+
+        if (typeof e === 'string') {
+            return new UnknownError(e);
+        }
+
+        if (
+            typeof e === 'object' &&
+            'message' in e &&
+            typeof e.message === 'string'
+        ) {
+            /**
+             * The errors that I know of have the following structure:
+             * {
+             *     message: string;
+             *     type: string | null;
+             *     code: string | null;
+             *     param: string | null;
+             *     status?: number;
+             * }
+             *
+             * For HTTP errors, only the "code" is present and looks like "401", "403", etc.
+             * For model errors, the "type" seems always present and looks like "invalid_request_error" while the "code" may be present and provide more details on why the request is invalid
+             * For content filtering errors, the "code" is "content_filter", the "type" is null and status = 400 (which is why we return a ContentFilterError that extends InvalidRequestError)
+             */
+
+            if ('code' in e && typeof e.code === 'string') {
+                if (isNaN(parseInt(e.code, 10))) {
+                    if (e.code === 'content_filter') {
+                        return new ContentFilterError(e.message);
+                    }
+                } else {
+                    const code = parseInt(e.code, 10);
+                    switch (code) {
+                        case 400:
+                            return new InvalidRequestError(e.message);
+                        case 401:
+                        case 403: // I know the difference, we just don't care here
+                            return new AccessDeniedError(e.message);
+                        default:
+                            return new UnknownError(e.message);
+                    }
+                }
+            }
+
+            if ('type' in e && typeof e.type === 'string') {
+                if (e.type === 'invalid_request_error') {
+                    if ('code' in e && typeof e.code === 'string') {
+                        if (e.code === 'context_length_exceeded') {
+                            return new ContextLengthExceededError(e.message);
+                        }
+                    }
+                    return new InvalidRequestError(e.message);
+                }
+            }
+        }
+
+        return new UnknownError(String(e));
+    }
 }
 
 export class RequiredAction extends EventEmitter {
-    constructor(public readonly toolCalls: ChatCompletionsToolCall[]) {
+    constructor(
+        public readonly toolCalls: ChatCompletionsToolCall[],
+        private readonly callback: (toolOutputs: ToolOutput[]) => Promise<void>,
+    ) {
         super();
     }
 
-    submitToolOutputs(toolOutputs: ToolOutput[]): void {
-        this.emit('submitting', toolOutputs);
+    submitToolOutputs(toolOutputs: ToolOutput[]): Promise<void> {
+        return this.callback(toolOutputs);
     }
 }
 
