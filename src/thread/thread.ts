@@ -16,6 +16,13 @@ import type {
 import { ThreadMessageConverter } from './message.converter';
 import { ToolEmulator } from './tool.emulator';
 
+interface MultiToolUseParallelArguments {
+    tool_uses: {
+        recipient_name: string;
+        parameters: string;
+    }[];
+}
+
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
     private readonly _messages: ChatMessage[] = [];
@@ -138,7 +145,62 @@ export class Thread extends EventEmitter {
             let finalToolCalls: ChatCompletionsToolCall[];
 
             if (toolCalls.length > 0) {
-                finalToolCalls = [...toolCalls];
+                if (
+                    toolCalls.length === 1 &&
+                    toolCalls[0] &&
+                    toolCalls[0].type === 'function' &&
+                    toolCalls[0].function.name === 'multi_tool_use.parallel'
+                ) {
+                    /**
+                     * That seems to be an hallucination from the model,
+                     * we convert the payload into regular tool calls
+                     * See https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/8
+                     */
+                    const toolCall = toolCalls[0];
+                    const args = JSON.parse(
+                        toolCall.function.arguments,
+                    ) as MultiToolUseParallelArguments;
+                    /**
+                     * the arguments follow the structure:
+                     * {
+                     *     tool_uses: [
+                     *          {
+                     *              recipient_name: "functions.actual_tool_name",
+                     *              parameters: {
+                     *                  foo: "bar",
+                     *                  baz: true,
+                     *              }
+                     *          },
+                     *          ...
+                     *     ]
+                     * }
+                     */
+                    finalToolCalls = args.tool_uses.map(
+                        (
+                            toolUse: {
+                                recipient_name: string;
+                                parameters: unknown;
+                            },
+                            index,
+                        ) => {
+                            return {
+                                type: 'function',
+                                function: {
+                                    name: toolUse.recipient_name.replace(
+                                        'functions.',
+                                        '',
+                                    ),
+                                    arguments: JSON.stringify(
+                                        toolUse.parameters,
+                                    ),
+                                },
+                                id: `${toolCall.id}_${index}`,
+                            };
+                        },
+                    );
+                } else {
+                    finalToolCalls = [...toolCalls];
+                }
             } else if (functionCall) {
                 /**
                  * We received a legacy function call, we convert it to a tool call with an emulated ID

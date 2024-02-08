@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[src/thread/message.converter.ts:19](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/message.converter.ts#L19)
+[src/thread/message.converter.ts:19](https://github.com/paztek/llobotomy-azure/blob/752a9c2/src/thread/message.converter.ts#L19)
 
 ## Methods
 
@@ -53,4 +53,4 @@ so they can be sent again to the LLM.
 
 #### Defined in
 
-[src/thread/message.converter.ts:25](https://github.com/paztek/llobotomy-azure/blob/b874c45/src/thread/message.converter.ts#L25)
+[src/thread/message.converter.ts:25](https://github.com/paztek/llobotomy-azure/blob/752a9c2/src/thread/message.converter.ts#L25)
