@@ -13,7 +13,9 @@
 - [client](Assistant.md#client)
 - [deployment](Assistant.md#deployment)
 - [instructions](Assistant.md#instructions)
+- [temperature](Assistant.md#temperature)
 - [tools](Assistant.md#tools)
+- [topP](Assistant.md#topp)
 - [useLegacyFunctions](Assistant.md#uselegacyfunctions)
 
 ### Methods
@@ -34,7 +36,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L26)
+[src/assistant/assistant.ts:30](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L30)
 
 ## Properties
 
@@ -44,7 +46,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L19)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L21)
 
 ___
 
@@ -54,7 +56,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L23)
+[src/assistant/assistant.ts:25](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L25)
 
 ___
 
@@ -64,7 +66,17 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L23)
+
+___
+
+### temperature
+
+• `Private` `Readonly` **temperature**: `undefined` \| `number`
+
+#### Defined in
+
+[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L26)
 
 ___
 
@@ -74,7 +86,17 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L22)
+[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L24)
+
+___
+
+### topP
+
+• `Private` `Readonly` **topP**: `undefined` \| `number`
+
+#### Defined in
+
+[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L27)
 
 ___
 
@@ -84,7 +106,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L24)
+[src/assistant/assistant.ts:28](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L28)
 
 ## Methods
 
@@ -104,4 +126,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:34](https://github.com/paztek/llobotomy-azure/blob/5572695/src/assistant/assistant.ts#L34)
+[src/assistant/assistant.ts:42](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L42)

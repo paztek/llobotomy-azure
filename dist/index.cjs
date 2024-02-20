@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.6
+ * llobotomy-azure v0.0.7
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
@@ -15,6 +15,8 @@ class Assistant {
         this.instructions = params.instructions;
         this.tools = params.tools;
         this.deployment = params.deployment;
+        this.temperature = params.temperature;
+        this.topP = params.topP;
         this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
     async streamChatCompletions(messages) {
@@ -25,6 +27,12 @@ class Assistant {
         };
         messages = [systemMessage, ...messages];
         const options = {};
+        if (this.temperature !== undefined) {
+            options.temperature = this.temperature;
+        }
+        if (this.topP !== undefined) {
+            options.topP = this.topP;
+        }
         if (this.tools.length > 0) {
             if (this.useLegacyFunctions) {
                 // Convert tools to functions

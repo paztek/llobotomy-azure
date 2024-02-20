@@ -8,12 +8,16 @@ export interface AssistantCreateParams {
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
     useLegacyFunctions?: boolean;
+    temperature?: number;
+    topP?: number;
 }
 export declare class Assistant {
     readonly client: OpenAIClient;
     private readonly instructions;
     private readonly tools;
     private readonly deployment;
+    private readonly temperature;
+    private readonly topP;
     private readonly useLegacyFunctions;
     constructor(params: AssistantCreateParams);
     streamChatCompletions(messages: ChatRequestMessage[]): Promise<Readable>;

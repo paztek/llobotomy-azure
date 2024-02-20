@@ -13,6 +13,8 @@ export interface AssistantCreateParams {
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
     useLegacyFunctions?: boolean;
+    temperature?: number;
+    topP?: number;
 }
 
 export class Assistant {
@@ -21,6 +23,8 @@ export class Assistant {
     private readonly instructions: string;
     private readonly tools: ChatCompletionsToolDefinition[];
     private readonly deployment: string;
+    private readonly temperature: number | undefined;
+    private readonly topP: number | undefined;
     private readonly useLegacyFunctions: boolean;
 
     constructor(params: AssistantCreateParams) {
@@ -28,6 +32,10 @@ export class Assistant {
         this.instructions = params.instructions;
         this.tools = params.tools;
         this.deployment = params.deployment;
+
+        this.temperature = params.temperature;
+        this.topP = params.topP;
+
         this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
 
@@ -42,6 +50,14 @@ export class Assistant {
         messages = [systemMessage, ...messages];
 
         const options: GetChatCompletionsOptions = {};
+
+        if (this.temperature !== undefined) {
+            options.temperature = this.temperature;
+        }
+
+        if (this.topP !== undefined) {
+            options.topP = this.topP;
+        }
 
         if (this.tools.length > 0) {
             if (this.useLegacyFunctions) {
