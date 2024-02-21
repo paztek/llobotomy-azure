@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L11)
+[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L11)
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L14)
+[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L14)
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:12](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L12)
+[src/assistant/assistant.ts:12](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L12)
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:16](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L16)
+[src/assistant/assistant.ts:16](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L16)
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:13](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L13)
+[src/assistant/assistant.ts:13](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L13)
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L17)
+[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L17)
 
 ___
 
@@ -82,4 +82,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:15](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L15)
+[src/assistant/assistant.ts:15](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L15)

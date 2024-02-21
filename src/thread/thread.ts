@@ -279,7 +279,10 @@ export class Thread extends EventEmitter {
             for (const toolOutput of toolOutputs) {
                 const message: ChatRequestToolMessageWithMetadata = {
                     role: 'tool',
-                    content: JSON.stringify(toolOutput.value),
+                    content:
+                        typeof toolOutput.value === 'string'
+                            ? toolOutput.value
+                            : JSON.stringify(toolOutput.value),
                     toolCallId: toolOutput.callId,
                 };
                 if (toolOutput.metadata !== void 0) {

@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:30](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L30)
+[src/assistant/assistant.ts:30](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L30)
 
 ## Properties
 
@@ -46,7 +46,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L21)
 
 ___
 
@@ -56,7 +56,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:25](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L25)
+[src/assistant/assistant.ts:25](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L25)
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L23)
+[src/assistant/assistant.ts:23](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L23)
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L26)
+[src/assistant/assistant.ts:26](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L26)
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L24)
+[src/assistant/assistant.ts:24](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L24)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L27)
+[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L27)
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:28](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L28)
+[src/assistant/assistant.ts:28](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L28)
 
 ## Methods
 
@@ -126,4 +126,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:42](https://github.com/paztek/llobotomy-azure/blob/dd7663a/src/assistant/assistant.ts#L42)
+[src/assistant/assistant.ts:42](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L42)
