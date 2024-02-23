@@ -9,7 +9,12 @@ import { Readable } from 'stream';
 
 export interface AssistantCreateParams {
     client: OpenAIClient;
-    instructions: string;
+
+    /**
+     * If provided and if there is no "system" message at the beginning of an array of messages,
+     * then the assistant will prepend a "system" message with these instructions.
+     */
+    instructions?: string;
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
     useLegacyFunctions?: boolean;
@@ -20,7 +25,7 @@ export interface AssistantCreateParams {
 export class Assistant {
     public readonly client: OpenAIClient;
 
-    private readonly instructions: string;
+    private readonly instructions: string | undefined;
     private readonly tools: ChatCompletionsToolDefinition[];
     private readonly deployment: string;
     private readonly temperature: number | undefined;
@@ -42,12 +47,18 @@ export class Assistant {
     async streamChatCompletions(
         messages: ChatRequestMessage[],
     ): Promise<Readable> {
-        // Prepend the messages with our instructions as a "system" message
-        const systemMessage: ChatRequestSystemMessage = {
-            role: 'system',
-            content: this.instructions,
-        };
-        messages = [systemMessage, ...messages];
+        if (
+            this.instructions &&
+            messages.length >= 1 &&
+            messages[0]?.role !== 'system'
+        ) {
+            // Prepend the messages with our instructions as a "system" message
+            const systemMessage: ChatRequestSystemMessage = {
+                role: 'system',
+                content: this.instructions,
+            };
+            messages = [systemMessage, ...messages];
+        }
 
         const options: GetChatCompletionsOptions = {};
 

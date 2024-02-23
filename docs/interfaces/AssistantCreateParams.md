@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L11)
+[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L11)
 
 ___
 
@@ -32,17 +32,20 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:14](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L14)
+[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L19)
 
 ___
 
 ### instructions
 
-• **instructions**: `string`
+• `Optional` **instructions**: `string`
+
+If provided and if there is no "system" message at the beginning of an array of messages,
+then the assistant will prepend a "system" message with these instructions.
 
 #### Defined in
 
-[src/assistant/assistant.ts:12](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L12)
+[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L17)
 
 ___
 
@@ -52,7 +55,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:16](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L16)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L21)
 
 ___
 
@@ -62,7 +65,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:13](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L13)
+[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L18)
 
 ___
 
@@ -72,7 +75,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L17)
+[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L22)
 
 ___
 
@@ -82,4 +85,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:15](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/assistant/assistant.ts#L15)
+[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/assistant/assistant.ts#L20)

@@ -4,7 +4,11 @@ import type { ChatCompletionsToolDefinition } from '@azure/openai/types/src/mode
 import { Readable } from 'stream';
 export interface AssistantCreateParams {
     client: OpenAIClient;
-    instructions: string;
+    /**
+     * If provided and if there is no "system" message at the beginning of an array of messages,
+     * then the assistant will prepend a "system" message with these instructions.
+     */
+    instructions?: string;
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
     useLegacyFunctions?: boolean;

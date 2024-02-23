@@ -40,7 +40,7 @@ Helps with the conversion of tool calls to function calls and vice versa.
 
 #### Defined in
 
-[src/thread/tool.emulator.ts:17](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/thread/tool.emulator.ts#L17)
+[src/thread/tool.emulator.ts:17](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/thread/tool.emulator.ts#L17)
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 #### Defined in
 
-[src/thread/tool.emulator.ts:9](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/thread/tool.emulator.ts#L9)
+[src/thread/tool.emulator.ts:9](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/thread/tool.emulator.ts#L9)
 
 ___
 
@@ -80,4 +80,4 @@ ___
 
 #### Defined in
 
-[src/thread/tool.emulator.ts:13](https://github.com/paztek/llobotomy-azure/blob/e7a9b63/src/thread/tool.emulator.ts#L13)
+[src/thread/tool.emulator.ts:13](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/thread/tool.emulator.ts#L13)

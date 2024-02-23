@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.7
+ * llobotomy-azure v0.0.8
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
@@ -20,12 +20,16 @@ class Assistant {
         this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
     async streamChatCompletions(messages) {
-        // Prepend the messages with our instructions as a "system" message
-        const systemMessage = {
-            role: 'system',
-            content: this.instructions,
-        };
-        messages = [systemMessage, ...messages];
+        if (this.instructions &&
+            messages.length >= 1 &&
+            messages[0]?.role !== 'system') {
+            // Prepend the messages with our instructions as a "system" message
+            const systemMessage = {
+                role: 'system',
+                content: this.instructions,
+            };
+            messages = [systemMessage, ...messages];
+        }
         const options = {};
         if (this.temperature !== undefined) {
             options.temperature = this.temperature;
