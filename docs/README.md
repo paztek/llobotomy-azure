@@ -48,7 +48,7 @@ LLobotoMy for Azure
 
 #### Defined in
 
-[src/message/message.ts:32](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L32)
+[src/message/message.ts:32](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L32)
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:16](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L16)
+[src/message/message.ts:16](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L16)
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:20](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L20)
+[src/message/message.ts:20](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L20)
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:25](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L25)
+[src/message/message.ts:25](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L25)
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:12](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L12)
+[src/message/message.ts:12](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L12)
 
 ___
 
@@ -98,7 +98,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:18](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L18)
+[src/message/message.ts:18](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L18)
 
 ___
 
@@ -108,7 +108,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:14](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L14)
+[src/message/message.ts:14](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L14)
 
 ___
 
@@ -118,7 +118,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:23](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L23)
+[src/message/message.ts:23](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L23)
 
 ___
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[src/message/message.ts:10](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/message/message.ts#L10)
+[src/message/message.ts:10](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/message/message.ts#L10)
 
 ## Functions
 
@@ -155,7 +155,7 @@ m is ChatRequestMessage
 
 #### Defined in
 
-[src/thread/thread.ts:429](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/thread/thread.ts#L429)
+[src/thread/thread.ts:434](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L434)
 
 ___
 
@@ -175,4 +175,4 @@ m is ChatResponseMessage
 
 #### Defined in
 
-[src/thread/thread.ts:423](https://github.com/paztek/llobotomy-azure/blob/5212bc9/src/thread/thread.ts#L423)
+[src/thread/thread.ts:428](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L428)

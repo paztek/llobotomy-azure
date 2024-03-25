@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.8
+ * llobotomy-azure v0.0.9
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */

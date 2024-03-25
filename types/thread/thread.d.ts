@@ -4,7 +4,7 @@ import type { ChatCompletionsToolCall, ChatRequestMessage, ChatResponseMessage }
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
-import type { ChatMessage, ChatRequestMessageWithMetadata } from '../message';
+import type { ChatMessage, ChatRequestMessageWithMetadata, ChatResponseMessageWithMetadata } from '../message';
 export declare class Thread extends EventEmitter {
     readonly id: string;
     private _stream;
@@ -14,7 +14,7 @@ export declare class Thread extends EventEmitter {
     constructor(id: string, messages?: ChatMessage[]);
     get stream(): Readable | null;
     get messages(): ChatMessage[];
-    addMessage(message: ChatRequestMessageWithMetadata): void;
+    addMessage(message: ChatRequestMessageWithMetadata | ChatResponseMessageWithMetadata): void;
     run(assistant: Assistant): Promise<void>;
     private doRun;
     private dispatchRequiredAction;

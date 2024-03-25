@@ -12,6 +12,7 @@ import type {
     ChatMessage,
     ChatRequestMessageWithMetadata,
     ChatRequestToolMessageWithMetadata,
+    ChatResponseMessageWithMetadata,
 } from '../message';
 import {
     AccessDeniedError,
@@ -54,7 +55,11 @@ export class Thread extends EventEmitter {
         return this._messages;
     }
 
-    addMessage(message: ChatRequestMessageWithMetadata): void {
+    addMessage(
+        message:
+            | ChatRequestMessageWithMetadata
+            | ChatResponseMessageWithMetadata,
+    ): void {
         this.doAddMessage(message);
     }
 
