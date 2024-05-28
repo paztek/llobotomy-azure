@@ -20,7 +20,6 @@
 - [\_stream](Thread.md#_stream)
 - [converter](Thread.md#converter)
 - [id](Thread.md#id)
-- [toolEmulator](Thread.md#toolemulator)
 - [captureRejectionSymbol](Thread.md#capturerejectionsymbol)
 - [captureRejections](Thread.md#capturerejections)
 - [defaultMaxListeners](Thread.md#defaultmaxlisteners)
@@ -84,7 +83,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:41](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L41)
+[src/thread/thread.ts:29](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L29)
 
 ## Properties
 
@@ -94,7 +93,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L37)
+[src/thread/thread.ts:26](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L26)
 
 ___
 
@@ -104,7 +103,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:36](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L36)
+[src/thread/thread.ts:25](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L25)
 
 ___
 
@@ -114,7 +113,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:38](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L38)
+[src/thread/thread.ts:27](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L27)
 
 ___
 
@@ -124,17 +123,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:42](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L42)
-
-___
-
-### toolEmulator
-
-• `Private` `Readonly` **toolEmulator**: [`ToolEmulator`](ToolEmulator.md)
-
-#### Defined in
-
-[src/thread/thread.ts:39](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L39)
+[src/thread/thread.ts:30](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L30)
 
 ___
 
@@ -267,7 +256,7 @@ node_modules/@types/node/events.d.ts:395
 
 #### Defined in
 
-[src/thread/thread.ts:53](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L53)
+[src/thread/thread.ts:41](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L41)
 
 ___
 
@@ -281,7 +270,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:49](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L49)
+[src/thread/thread.ts:37](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L37)
 
 ## Methods
 
@@ -350,7 +339,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `message` | [`ChatResponseMessageWithMetadata`](../README.md#chatresponsemessagewithmetadata) \| [`ChatRequestMessageWithMetadata`](../README.md#chatrequestmessagewithmetadata) |
+| `message` | [`ChatMessage`](../README.md#chatmessage) |
 
 #### Returns
 
@@ -358,7 +347,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:58](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L58)
+[src/thread/thread.ts:46](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L46)
 
 ___
 
@@ -383,7 +372,7 @@ We try here to handle most of them and return a consistent error type
 
 #### Defined in
 
-[src/thread/thread.ts:345](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L345)
+[src/thread/thread.ts:242](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L242)
 
 ___
 
@@ -404,7 +393,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:268](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L268)
+[src/thread/thread.ts:167](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L167)
 
 ___
 
@@ -416,7 +405,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `message` | `ChatRequestMessage` \| `ChatResponseMessage` |
+| `message` | [`ChatMessage`](../README.md#chatmessage) |
 
 #### Returns
 
@@ -424,7 +413,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:315](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L315)
+[src/thread/thread.ts:214](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L214)
 
 ___
 
@@ -444,7 +433,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:74](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L74)
+[src/thread/thread.ts:58](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L58)
 
 ___
 
@@ -532,7 +521,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:329](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L329)
+[src/thread/thread.ts:226](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L226)
 
 ___
 
@@ -617,7 +606,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:278](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L278)
+[src/thread/thread.ts:177](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L177)
 
 ___
 
@@ -1132,7 +1121,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:66](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L66)
+[src/thread/thread.ts:50](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L50)
 
 ___
 

@@ -17,7 +17,6 @@ export interface AssistantCreateParams {
     instructions?: string;
     tools: ChatCompletionsToolDefinition[];
     deployment: string;
-    useLegacyFunctions?: boolean;
     temperature?: number;
     topP?: number;
 }
@@ -30,7 +29,6 @@ export class Assistant {
     private readonly deployment: string;
     private readonly temperature: number | undefined;
     private readonly topP: number | undefined;
-    private readonly useLegacyFunctions: boolean;
 
     constructor(params: AssistantCreateParams) {
         this.client = params.client;
@@ -40,8 +38,6 @@ export class Assistant {
 
         this.temperature = params.temperature;
         this.topP = params.topP;
-
-        this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
 
     async streamChatCompletions(
@@ -71,15 +67,9 @@ export class Assistant {
         }
 
         if (this.tools.length > 0) {
-            if (this.useLegacyFunctions) {
-                // Convert tools to functions
-                options.functions = this.tools.map((tool) => {
-                    return tool.function;
-                });
-            } else {
-                options.tools = this.tools;
-            }
+            options.tools = this.tools;
         }
+
         const events = await this.client.streamChatCompletions(
             this.deployment,
             messages,

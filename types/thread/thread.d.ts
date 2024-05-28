@@ -1,20 +1,20 @@
 /// <reference types="node" />
 /// <reference types="node" />
-import type { ChatCompletionsToolCall, ChatRequestMessage, ChatResponseMessage } from '@azure/openai';
+import type { ChatRequestMessage, ChatResponseMessage } from '@azure/openai';
+import type { ChatCompletionsFunctionToolCall } from '@azure/openai/types/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
-import type { ChatMessage, ChatRequestMessageWithMetadata, ChatResponseMessageWithMetadata } from '../message';
+import type { ChatMessage } from '../message';
 export declare class Thread extends EventEmitter {
     readonly id: string;
     private _stream;
     private readonly _messages;
     private readonly converter;
-    private readonly toolEmulator;
     constructor(id: string, messages?: ChatMessage[]);
     get stream(): Readable | null;
     get messages(): ChatMessage[];
-    addMessage(message: ChatRequestMessageWithMetadata | ChatResponseMessageWithMetadata): void;
+    addMessage(message: ChatMessage): void;
     run(assistant: Assistant): Promise<void>;
     private doRun;
     private dispatchRequiredAction;
@@ -30,9 +30,9 @@ export declare class Thread extends EventEmitter {
     private buildError;
 }
 export declare class RequiredAction extends EventEmitter {
-    readonly toolCalls: ChatCompletionsToolCall[];
+    readonly toolCalls: ChatCompletionsFunctionToolCall[];
     private readonly callback;
-    constructor(toolCalls: ChatCompletionsToolCall[], callback: (toolOutputs: ToolOutput[]) => Promise<void>);
+    constructor(toolCalls: ChatCompletionsFunctionToolCall[], callback: (toolOutputs: ToolOutput[]) => Promise<void>);
     submitToolOutputs(toolOutputs: ToolOutput[]): Promise<void>;
 }
 export interface ToolOutput {

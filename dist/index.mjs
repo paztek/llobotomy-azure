@@ -1,5 +1,5 @@
 /*!
- * llobotomy-azure v0.0.9
+ * llobotomy-azure v0.0.10
  * (c) Matthieu Balmes
  * Released under the MIT License.
  */
@@ -15,7 +15,6 @@ class Assistant {
         this.deployment = params.deployment;
         this.temperature = params.temperature;
         this.topP = params.topP;
-        this.useLegacyFunctions = params.useLegacyFunctions ?? false;
     }
     async streamChatCompletions(messages) {
         if (this.instructions &&
@@ -36,15 +35,7 @@ class Assistant {
             options.topP = this.topP;
         }
         if (this.tools.length > 0) {
-            if (this.useLegacyFunctions) {
-                // Convert tools to functions
-                options.functions = this.tools.map((tool) => {
-                    return tool.function;
-                });
-            }
-            else {
-                options.tools = this.tools;
-            }
+            options.tools = this.tools;
         }
         const events = await this.client.streamChatCompletions(this.deployment, messages, options);
         return Readable.from(events);
@@ -99,26 +90,7 @@ class InvalidToolOutputsError extends Error {
     }
 }
 
-const EMULATED_CALL_PREFIX = 'emulated_call_';
-/**
- * Helps with the conversion of tool calls to function calls and vice versa.
- */
-class ToolEmulator {
-    generateEmulatedToolCallId(functionCall) {
-        return `${EMULATED_CALL_PREFIX}${functionCall.name}`;
-    }
-    isEmulatedToolCallId(toolCallId) {
-        return toolCallId.startsWith(EMULATED_CALL_PREFIX);
-    }
-    extractFunctionNameFromEmulatedToolCallId(toolCallId) {
-        return toolCallId.replace(EMULATED_CALL_PREFIX, '');
-    }
-}
-
 class ThreadMessageConverter {
-    constructor() {
-        this.toolEmulator = new ToolEmulator();
-    }
     /**
      * Convert the mix of ChatRequestMessages and ChatResponseMessages to ChatRequestMessages only
      * so they can be sent again to the LLM.
@@ -143,13 +115,6 @@ class ThreadMessageConverter {
                 }
                 case 'tool': {
                     const toolMessage = m;
-                    if (this.toolEmulator.isEmulatedToolCallId(toolMessage.toolCallId)) {
-                        return {
-                            role: 'function',
-                            content: toolMessage.content,
-                            name: this.toolEmulator.extractFunctionNameFromEmulatedToolCallId(toolMessage.toolCallId),
-                        };
-                    }
                     return {
                         role: 'tool',
                         content: toolMessage.content,
@@ -158,19 +123,6 @@ class ThreadMessageConverter {
                 }
                 case 'assistant': {
                     const assistantMessage = m;
-                    if (assistantMessage.toolCalls[0] &&
-                        this.toolEmulator.isEmulatedToolCallId(assistantMessage.toolCalls[0].id)) {
-                        // This is a function call
-                        return {
-                            role: 'assistant',
-                            content: assistantMessage.content,
-                            functionCall: {
-                                name: this.toolEmulator.extractFunctionNameFromEmulatedToolCallId(assistantMessage.toolCalls[0].id),
-                                arguments: assistantMessage.toolCalls[0].function
-                                    .arguments,
-                            },
-                        };
-                    }
                     return {
                         role: 'assistant',
                         content: assistantMessage.content,
@@ -191,7 +143,6 @@ class Thread extends EventEmitter {
         this._stream = null;
         this._messages = [];
         this.converter = new ThreadMessageConverter();
-        this.toolEmulator = new ToolEmulator();
         this._messages = messages;
     }
     get stream() {
@@ -230,8 +181,7 @@ class Thread extends EventEmitter {
             return this.emitImmediate('error', error);
         }
         let content = null;
-        const toolCalls = [];
-        let functionCall = undefined;
+        let toolCalls = [];
         stream.on('data', (completion) => {
             if (!completion.id || completion.id === '') {
                 // First completion is empty when using old models like gpt-35-turbo
@@ -272,94 +222,23 @@ class Thread extends EventEmitter {
                     }
                 }
             }
-            // Merge functionCalls
-            if (delta.functionCall) {
-                if (functionCall) {
-                    functionCall.arguments += delta.functionCall.arguments;
-                }
-                else {
-                    functionCall = {
-                        ...delta.functionCall,
-                        arguments: '',
-                    };
-                }
-            }
             if (choice.finishReason === null) {
                 return;
-            }
-            let finalToolCalls;
-            if (toolCalls.length > 0) {
-                if (toolCalls.length === 1 &&
-                    toolCalls[0] &&
-                    toolCalls[0].type === 'function' &&
-                    toolCalls[0].function.name === 'multi_tool_use.parallel') {
-                    /**
-                     * That seems to be an hallucination from the model,
-                     * we convert the payload into regular tool calls
-                     * See https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/8
-                     */
-                    const toolCall = toolCalls[0];
-                    const args = JSON.parse(toolCall.function.arguments);
-                    /**
-                     * The arguments follow the structure:
-                     * {
-                     *     tool_uses: [
-                     *          {
-                     *              recipient_name: "functions.actual_tool_name",
-                     *              parameters: {
-                     *                  foo: "bar",
-                     *                  baz: true,
-                     *              }
-                     *          },
-                     *          ...
-                     *     ]
-                     * }
-                     */
-                    finalToolCalls = args.tool_uses.map((toolUse, index) => {
-                        return {
-                            type: 'function',
-                            function: {
-                                name: toolUse.recipient_name.replace('functions.', ''),
-                                arguments: JSON.stringify(toolUse.parameters),
-                            },
-                            id: `${toolCall.id}_${index}`,
-                        };
-                    });
-                }
-                else {
-                    finalToolCalls = [...toolCalls];
-                }
-            }
-            else if (functionCall) {
-                /**
-                 * We received a legacy function call, we convert it to a tool call with an emulated ID
-                 */
-                const toolCall = {
-                    type: 'function',
-                    function: functionCall,
-                    id: this.toolEmulator.generateEmulatedToolCallId(functionCall),
-                };
-                finalToolCalls = [toolCall];
-            }
-            else {
-                finalToolCalls = [];
             }
             const message = {
                 role: 'assistant',
                 content,
-                toolCalls: finalToolCalls,
+                toolCalls,
             };
             content = null;
-            toolCalls.splice(0, toolCalls.length);
-            functionCall = undefined;
+            toolCalls = [];
             this.doAddMessage(message);
             switch (choice.finishReason) {
                 case 'stop':
                     this._stream?.push(null);
                     this.emitImmediate('completed');
                     break;
-                case 'tool_calls':
-                case 'function_call': {
+                case 'tool_calls': {
                     this.dispatchRequiredAction(message.toolCalls, assistant);
                     break;
                 }
@@ -502,5 +381,5 @@ function isChatRequestMessage(m) {
     return !isChatResponseMessage(m);
 }
 
-export { AccessDeniedError, Assistant, ContentFilterError, ContextLengthExceededError, InvalidRequestError, InvalidToolOutputsError, RequiredAction, Thread, ThreadMessageConverter, ToolEmulator, UnknownError, isChatRequestMessage, isChatResponseMessage };
+export { AccessDeniedError, Assistant, ContentFilterError, ContextLengthExceededError, InvalidRequestError, InvalidToolOutputsError, RequiredAction, Thread, ThreadMessageConverter, UnknownError, isChatRequestMessage, isChatResponseMessage };
 //# sourceMappingURL=index.mjs.map

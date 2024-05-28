@@ -1,5 +1,4 @@
-import type { ChatResponseMessage } from '@azure/openai';
-import type { ChatRequestAssistantMessage, ChatRequestFunctionMessage, ChatRequestSystemMessage, ChatRequestToolMessage, ChatRequestUserMessage } from '@azure/openai/types/src/models/models';
+import type { ChatResponseMessage, ChatRequestAssistantMessage, ChatRequestFunctionMessage, ChatRequestSystemMessage, ChatRequestToolMessage, ChatRequestUserMessage } from '@azure/openai';
 export type WithMetadata<T, U = unknown> = T & {
     metadata?: U;
 };

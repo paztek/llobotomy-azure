@@ -69,7 +69,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:410](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L410)
+[src/thread/thread.ts:307](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L307)
 
 ## Properties
 
@@ -93,7 +93,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[src/thread/thread.ts:412](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L412)
+[src/thread/thread.ts:309](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L309)
 
 ___
 
@@ -103,7 +103,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:411](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L411)
+[src/thread/thread.ts:308](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L308)
 
 ___
 
@@ -960,7 +960,7 @@ ___
 
 #### Defined in
 
-[src/thread/thread.ts:417](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/thread.ts#L417)
+[src/thread/thread.ts:314](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/thread.ts#L314)
 
 ___
 

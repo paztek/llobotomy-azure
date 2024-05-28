@@ -12,7 +12,6 @@
 - [temperature](AssistantCreateParams.md#temperature)
 - [tools](AssistantCreateParams.md#tools)
 - [topP](AssistantCreateParams.md#topp)
-- [useLegacyFunctions](AssistantCreateParams.md#uselegacyfunctions)
 
 ## Properties
 
@@ -22,7 +21,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L11)
+[src/assistant/assistant.ts:11](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L11)
 
 ___
 
@@ -32,7 +31,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L19)
+[src/assistant/assistant.ts:19](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L19)
 
 ___
 
@@ -45,7 +44,7 @@ then the assistant will prepend a "system" message with these instructions.
 
 #### Defined in
 
-[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L17)
+[src/assistant/assistant.ts:17](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L17)
 
 ___
 
@@ -55,17 +54,17 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L21)
+[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L20)
 
 ___
 
 ### tools
 
-• **tools**: `ChatCompletionsFunctionToolDefinition`[]
+• **tools**: `ChatCompletionsToolDefinition`[]
 
 #### Defined in
 
-[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L18)
+[src/assistant/assistant.ts:18](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L18)
 
 ___
 
@@ -75,14 +74,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:22](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L22)
-
-___
-
-### useLegacyFunctions
-
-• `Optional` **useLegacyFunctions**: `boolean`
-
-#### Defined in
-
-[src/assistant/assistant.ts:20](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/assistant/assistant.ts#L20)
+[src/assistant/assistant.ts:21](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L21)

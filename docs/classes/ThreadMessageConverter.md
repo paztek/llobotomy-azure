@@ -8,10 +8,6 @@
 
 - [constructor](ThreadMessageConverter.md#constructor)
 
-### Properties
-
-- [toolEmulator](ThreadMessageConverter.md#toolemulator)
-
 ### Methods
 
 - [convert](ThreadMessageConverter.md#convert)
@@ -21,16 +17,6 @@
 ### constructor
 
 • **new ThreadMessageConverter**()
-
-## Properties
-
-### toolEmulator
-
-• `Private` `Readonly` **toolEmulator**: [`ToolEmulator`](ToolEmulator.md)
-
-#### Defined in
-
-[src/thread/message.converter.ts:19](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/message.converter.ts#L19)
 
 ## Methods
 
@@ -53,4 +39,4 @@ so they can be sent again to the LLM.
 
 #### Defined in
 
-[src/thread/message.converter.ts:25](https://github.com/paztek/llobotomy-azure/blob/f426db6/src/thread/message.converter.ts#L25)
+[src/thread/message.converter.ts:21](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/message.converter.ts#L21)

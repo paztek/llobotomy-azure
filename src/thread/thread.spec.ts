@@ -4,6 +4,7 @@ import type {
     ChatRequestUserMessage,
     ChatResponseMessage,
 } from '@azure/openai';
+import type { ChatCompletionsFunctionToolCall } from '@azure/openai/types/openai';
 import type { ChatRequestToolMessage } from '@azure/openai/types/src/models/models';
 import { mock } from 'jest-mock-extended';
 import { Readable } from 'stream';
@@ -105,7 +106,7 @@ describe('Thread', () => {
                                         name: functionName,
                                         arguments: '',
                                     },
-                                },
+                                } as ChatCompletionsFunctionToolCall,
                             ],
                         },
                     },
@@ -241,10 +242,10 @@ describe('Thread', () => {
                 const requiredAction = emitSpy.mock
                     .calls[2][1] as RequiredAction;
                 expect(requiredAction.toolCalls).toBeDefined();
-                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
-                    functionName,
-                );
-                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
+                const toolCall = requiredAction
+                    .toolCalls[0] as ChatCompletionsFunctionToolCall;
+                expect(toolCall.function.name).toEqual(functionName);
+                expect(toolCall.function.arguments).toEqual(
                     JSON.stringify({
                         id: 'ABC',
                     }),
@@ -490,334 +491,10 @@ describe('Thread', () => {
                 const requiredAction = emitSpy.mock
                     .calls[2][1] as RequiredAction;
                 expect(requiredAction.toolCalls).toBeDefined();
-                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
-                    functionName1,
-                );
-                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
-                    JSON.stringify({
-                        id: 'ABC',
-                    }),
-                );
-            });
-        });
-
-        describe('when the completions from the assistant are about a single weird multi_tool_use.parallel call', () => {
-            // See https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/8
-            const functionName1 = 'get_customer_profile';
-            const functionName2 = 'search_knowledge_base';
-
-            beforeEach(() => {
-                const choices: ChatChoice[] = [
-                    {
-                        index: 0,
-                        finishReason: null,
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        delta: {
-                            role: 'assistant',
-                            toolCalls: [
-                                {
-                                    id: 'tool-call-1234abc',
-                                    type: 'function',
-                                    function: {
-                                        name: 'multi_tool_use.parallel',
-                                        arguments: '',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            toolCalls: [
-                                {
-                                    index: 0,
-                                    function: {
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        name: undefined,
-                                        arguments:
-                                            '{"tool_uses":[{"recipient_name":"functions.search_kn',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            toolCalls: [
-                                {
-                                    index: 0,
-                                    function: {
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        name: undefined,
-                                        arguments:
-                                            'owledge_base","parameters":{"query":"foo"}},{"recip',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            toolCalls: [
-                                {
-                                    index: 0,
-                                    function: {
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        name: undefined,
-                                        arguments:
-                                            'ient_name":"functions.get_customer_profile","parameters":{"id":"ABC"}}]}',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: 'tool_calls',
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        delta: {
-                            toolCalls: [],
-                        },
-                    },
-                ];
-                const completions: ChatCompletions[] = choices.map(
-                    (choice) => ({
-                        id: 'chat-cmpl-1234abc',
-                        created: new Date(),
-                        choices: [choice],
-                        promptFilterResults: [],
-                    }),
-                );
-
-                assistant.streamChatCompletions.mockResolvedValue(
-                    Readable.from(
-                        createAsyncIterable<ChatCompletions>(completions),
-                    ),
-                );
-            });
-
-            it('emits a "message" event from the assistant, with the tool calls parameters', async () => {
-                await thread.run(assistant);
-
-                // The "message" event is sent asynchronously, we need to wait for it to be emitted
-                await new Promise<void>((resolve, reject) => {
-                    thread.on('error', reject);
-                    thread.on('message', (message) => {
-                        if (isChatResponseAssistantToolCallsMessage(message)) {
-                            resolve();
-                        }
-                    });
-                });
-
-                expect(emitSpy).nthCalledWith(2, 'message', {
-                    role: 'assistant',
-                    content: null,
-                    toolCalls: [
-                        {
-                            id: 'tool-call-1234abc_0',
-                            type: 'function',
-                            function: {
-                                name: functionName2,
-                                arguments: JSON.stringify({
-                                    query: 'foo',
-                                }),
-                            },
-                        },
-                        {
-                            id: 'tool-call-1234abc_1',
-                            type: 'function',
-                            function: {
-                                name: functionName1,
-                                arguments: JSON.stringify({
-                                    id: 'ABC',
-                                }),
-                            },
-                        },
-                    ],
-                });
-            });
-
-            it('emits a "requires_action" event with the required action', async () => {
-                await thread.run(assistant);
-
-                // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
-                await new Promise<void>((resolve, reject) => {
-                    thread.on('error', reject);
-                    thread.on('requires_action', resolve);
-                });
-
-                expect(emitSpy).nthCalledWith(
-                    4,
-                    'requires_action',
-                    expect.any(RequiredAction),
-                );
-
-                const requiredAction = emitSpy.mock
-                    .calls[2][1] as RequiredAction;
-                expect(requiredAction.toolCalls).toBeDefined();
-                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
-                    functionName2,
-                );
-                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
-                    JSON.stringify({
-                        query: 'foo',
-                    }),
-                );
-                expect(requiredAction.toolCalls[1]?.function.name).toEqual(
-                    functionName1,
-                );
-                expect(requiredAction.toolCalls[1]?.function.arguments).toEqual(
-                    JSON.stringify({
-                        id: 'ABC',
-                    }),
-                );
-            });
-        });
-
-        describe('when the completions from the assistant are a function call', () => {
-            const functionName = 'get_customer_profile';
-
-            beforeEach(() => {
-                const choices: ChatChoice[] = [
-                    {
-                        index: 0,
-                        finishReason: null,
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        delta: {
-                            role: 'assistant',
-                            functionCall: {
-                                name: functionName,
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                arguments: undefined,
-                            },
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: '{"',
-                            },
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: 'id":"',
-                            },
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: null,
-                        delta: {
-                            functionCall: {
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
-                                name: undefined,
-                                arguments: 'ABC"}',
-                            },
-                        },
-                    },
-                    {
-                        index: 0,
-                        finishReason: 'function_call',
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        delta: {},
-                    },
-                ];
-                const completions: ChatCompletions[] = choices.map(
-                    (choice) => ({
-                        id: 'chat-cmpl-1234abc',
-                        created: new Date(),
-                        choices: [choice],
-                        promptFilterResults: [],
-                    }),
-                );
-
-                assistant.streamChatCompletions.mockResolvedValue(
-                    Readable.from(
-                        createAsyncIterable<ChatCompletions>(completions),
-                    ),
-                );
-            });
-
-            it('emits a "message" event from the assistant, with the function call parameters', async () => {
-                await thread.run(assistant);
-
-                // The "message" event is sent asynchronously, we need to wait for it to be emitted
-                await new Promise<void>((resolve, reject) => {
-                    thread.on('error', reject);
-                    thread.on('message', (message) => {
-                        if (isChatResponseAssistantToolCallsMessage(message)) {
-                            resolve();
-                        }
-                    });
-                });
-
-                expect(emitSpy).nthCalledWith(2, 'message', {
-                    role: 'assistant',
-                    content: null,
-                    toolCalls: [
-                        {
-                            id: 'emulated_call_get_customer_profile',
-                            type: 'function',
-                            function: {
-                                name: functionName,
-                                arguments: JSON.stringify({
-                                    id: 'ABC',
-                                }),
-                            },
-                        },
-                    ],
-                });
-            });
-
-            it('emits a "requires_action" event with the required action', async () => {
-                await thread.run(assistant);
-
-                // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
-                await new Promise<void>((resolve, reject) => {
-                    thread.on('error', reject);
-                    thread.on('requires_action', resolve);
-                });
-
-                expect(emitSpy).nthCalledWith(
-                    4,
-                    'requires_action',
-                    expect.any(RequiredAction),
-                );
-
-                const requiredAction = emitSpy.mock
-                    .calls[2][1] as RequiredAction;
-                expect(requiredAction.toolCalls).toBeDefined();
-                expect(requiredAction.toolCalls[0]?.function.name).toEqual(
-                    functionName,
-                );
-                expect(requiredAction.toolCalls[0]?.function.arguments).toEqual(
+                const toolCall = requiredAction
+                    .toolCalls[0] as ChatCompletionsFunctionToolCall;
+                expect(toolCall.function.name).toEqual(functionName1);
+                expect(toolCall.function.arguments).toEqual(
                     JSON.stringify({
                         id: 'ABC',
                     }),
@@ -972,7 +649,7 @@ describe('Thread', () => {
                                         name: functionName,
                                         arguments: '{"id":"ABC"}',
                                     },
-                                },
+                                } as ChatCompletionsFunctionToolCall,
                             ],
                         },
                     },

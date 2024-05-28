@@ -1,18 +1,15 @@
 import type {
     ChatCompletions,
-    ChatCompletionsToolCall,
     ChatRequestMessage,
     ChatResponseMessage,
-    FunctionCall,
 } from '@azure/openai';
+import type { ChatCompletionsFunctionToolCall } from '@azure/openai/types/openai';
 import EventEmitter from 'events';
 import { Readable } from 'stream';
 import { Assistant } from '../assistant';
 import type {
     ChatMessage,
-    ChatRequestMessageWithMetadata,
     ChatRequestToolMessageWithMetadata,
-    ChatResponseMessageWithMetadata,
 } from '../message';
 import {
     AccessDeniedError,
@@ -23,20 +20,11 @@ import {
     UnknownError,
 } from './errors';
 import { ThreadMessageConverter } from './message.converter';
-import { ToolEmulator } from './tool.emulator';
-
-interface MultiToolUseParallelArguments {
-    tool_uses: {
-        recipient_name: string;
-        parameters: string;
-    }[];
-}
 
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
     private readonly _messages: ChatMessage[] = [];
     private readonly converter = new ThreadMessageConverter();
-    private readonly toolEmulator = new ToolEmulator();
 
     constructor(
         public readonly id: string,
@@ -55,11 +43,7 @@ export class Thread extends EventEmitter {
         return this._messages;
     }
 
-    addMessage(
-        message:
-            | ChatRequestMessageWithMetadata
-            | ChatResponseMessageWithMetadata,
-    ): void {
+    addMessage(message: ChatMessage): void {
         this.doAddMessage(message);
     }
 
@@ -94,8 +78,7 @@ export class Thread extends EventEmitter {
         }
 
         let content: string | null = null;
-        const toolCalls: ChatCompletionsToolCall[] = [];
-        let functionCall: FunctionCall | undefined = undefined;
+        let toolCalls: ChatCompletionsFunctionToolCall[] = [];
 
         stream.on('data', (completion: ChatCompletions) => {
             if (!completion.id || completion.id === '') {
@@ -123,11 +106,13 @@ export class Thread extends EventEmitter {
 
             // Merge toolCalls
             if (delta.toolCalls) {
-                for (const toolCall of delta.toolCalls) {
+                for (const toolCall of delta.toolCalls as ChatCompletionsFunctionToolCall[]) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    const index = toolCall['index']; // Not typed yet by the @azure/openai package
-                    const existingToolCall = toolCalls[index];
+                    const index = toolCall['index'] as number; // Not typed yet by the @azure/openai package
+                    const existingToolCall = toolCalls[index] as
+                        | ChatCompletionsFunctionToolCall
+                        | undefined;
 
                     if (existingToolCall) {
                         existingToolCall.function.arguments +=
@@ -142,106 +127,18 @@ export class Thread extends EventEmitter {
                 }
             }
 
-            // Merge functionCalls
-            if (delta.functionCall) {
-                if (functionCall) {
-                    functionCall.arguments += delta.functionCall.arguments;
-                } else {
-                    functionCall = {
-                        ...delta.functionCall,
-                        arguments: '',
-                    };
-                }
-            }
-
             if (choice.finishReason === null) {
                 return;
-            }
-
-            let finalToolCalls: ChatCompletionsToolCall[];
-
-            if (toolCalls.length > 0) {
-                if (
-                    toolCalls.length === 1 &&
-                    toolCalls[0] &&
-                    toolCalls[0].type === 'function' &&
-                    toolCalls[0].function.name === 'multi_tool_use.parallel'
-                ) {
-                    /**
-                     * That seems to be an hallucination from the model,
-                     * we convert the payload into regular tool calls
-                     * See https://community.openai.com/t/model-tries-to-call-unknown-function-multi-tool-use-parallel/490653/8
-                     */
-                    const toolCall = toolCalls[0];
-                    const args = JSON.parse(
-                        toolCall.function.arguments,
-                    ) as MultiToolUseParallelArguments;
-                    /**
-                     * The arguments follow the structure:
-                     * {
-                     *     tool_uses: [
-                     *          {
-                     *              recipient_name: "functions.actual_tool_name",
-                     *              parameters: {
-                     *                  foo: "bar",
-                     *                  baz: true,
-                     *              }
-                     *          },
-                     *          ...
-                     *     ]
-                     * }
-                     */
-                    finalToolCalls = args.tool_uses.map(
-                        (
-                            toolUse: {
-                                recipient_name: string;
-                                parameters: unknown;
-                            },
-                            index,
-                        ) => {
-                            return {
-                                type: 'function',
-                                function: {
-                                    name: toolUse.recipient_name.replace(
-                                        'functions.',
-                                        '',
-                                    ),
-                                    arguments: JSON.stringify(
-                                        toolUse.parameters,
-                                    ),
-                                },
-                                id: `${toolCall.id}_${index}`,
-                            };
-                        },
-                    );
-                } else {
-                    finalToolCalls = [...toolCalls];
-                }
-            } else if (functionCall) {
-                /**
-                 * We received a legacy function call, we convert it to a tool call with an emulated ID
-                 */
-                const toolCall: ChatCompletionsToolCall = {
-                    type: 'function',
-                    function: functionCall,
-                    id: this.toolEmulator.generateEmulatedToolCallId(
-                        functionCall,
-                    ),
-                };
-                finalToolCalls = [toolCall];
-            } else {
-                finalToolCalls = [];
             }
 
             const message: ChatResponseMessage = {
                 role: 'assistant',
                 content,
-                toolCalls: finalToolCalls,
+                toolCalls,
             };
 
             content = null;
-            toolCalls.splice(0, toolCalls.length);
-            functionCall = undefined;
+            toolCalls = [];
 
             this.doAddMessage(message);
 
@@ -250,9 +147,11 @@ export class Thread extends EventEmitter {
                     this._stream?.push(null);
                     this.emitImmediate('completed');
                     break;
-                case 'tool_calls':
-                case 'function_call': {
-                    this.dispatchRequiredAction(message.toolCalls, assistant);
+                case 'tool_calls': {
+                    this.dispatchRequiredAction(
+                        message.toolCalls as ChatCompletionsFunctionToolCall[],
+                        assistant,
+                    );
                     break;
                 }
                 default: {
@@ -266,7 +165,7 @@ export class Thread extends EventEmitter {
     }
 
     private dispatchRequiredAction(
-        toolCalls: ChatCompletionsToolCall[],
+        toolCalls: ChatCompletionsFunctionToolCall[],
         assistant: Assistant,
     ): void {
         const callback = async (toolOutputs: ToolOutput[]) =>
@@ -312,9 +211,7 @@ export class Thread extends EventEmitter {
         }
     }
 
-    private doAddMessage(
-        message: ChatRequestMessage | ChatResponseMessage,
-    ): void {
+    private doAddMessage(message: ChatMessage): void {
         this._messages.push(message);
 
         this.emitImmediate('message', message);
@@ -408,7 +305,7 @@ export class Thread extends EventEmitter {
 
 export class RequiredAction extends EventEmitter {
     constructor(
-        public readonly toolCalls: ChatCompletionsToolCall[],
+        public readonly toolCalls: ChatCompletionsFunctionToolCall[],
         private readonly callback: (toolOutputs: ToolOutput[]) => Promise<void>,
     ) {
         super();
