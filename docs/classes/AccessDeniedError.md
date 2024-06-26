@@ -48,7 +48,7 @@ Error.constructor
 
 #### Defined in
 
-[src/thread/errors.ts:8](https://github.com/paztek/llobotomy-azure/blob/daad388/src/thread/errors.ts#L8)
+[src/thread/errors.ts:8](https://github.com/paztek/llobotomy-azure/blob/458351f/src/thread/errors.ts#L8)
 
 ## Properties
 

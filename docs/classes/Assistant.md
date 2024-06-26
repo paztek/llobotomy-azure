@@ -35,7 +35,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:33](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L33)
+[src/assistant/assistant.ts:33](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L33)
 
 ## Properties
 
@@ -45,7 +45,7 @@
 
 #### Defined in
 
-[src/assistant/assistant.ts:25](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L25)
+[src/assistant/assistant.ts:25](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L25)
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:29](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L29)
+[src/assistant/assistant.ts:29](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L29)
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L27)
+[src/assistant/assistant.ts:27](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L27)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:30](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L30)
+[src/assistant/assistant.ts:30](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L30)
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:28](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L28)
+[src/assistant/assistant.ts:28](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L28)
 
 ___
 
@@ -95,7 +95,7 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:31](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L31)
+[src/assistant/assistant.ts:31](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L31)
 
 ## Methods
 
@@ -115,4 +115,4 @@ ___
 
 #### Defined in
 
-[src/assistant/assistant.ts:43](https://github.com/paztek/llobotomy-azure/blob/daad388/src/assistant/assistant.ts#L43)
+[src/assistant/assistant.ts:43](https://github.com/paztek/llobotomy-azure/blob/458351f/src/assistant/assistant.ts#L43)
