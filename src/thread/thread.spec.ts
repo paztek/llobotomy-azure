@@ -758,6 +758,402 @@ describe('Thread', () => {
                 });
             });
         });
+
+        describe('when the completions are a confusion between content and tool calls', () => {
+            describe('when the tool call is only in the content as stringified JSON', () => {
+                /**
+                 * When it happens, most of the time the content looks like this:
+                 * < ... the stringified JSON  of the arguments for the tool it hesitated to call ...>\nI couldn't fulfill your request. Please try again.
+                 *
+                 * In that case, we can't easily interpret this JSON as a tool call because we're missing the name of the tool, the tool call ID, etc.
+                 * So we try to detect the end of the JSON and only publish as content the non-JSON part
+                 */
+
+                beforeEach(() => {
+                    const choices: ChatChoice[] = [
+                        {
+                            delta: { content: '', role: 'assistant' },
+                            finishReason: null,
+                            index: 0,
+                            logprobs: null,
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: '{"',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: 'id":"',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: 'ABC"}',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: "\nI couldn't",
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: ' fulfill',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: ' your request.',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: ' Please try',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: ' again.',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: 'stop',
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                toolCalls: [],
+                            },
+                        },
+                    ];
+
+                    const completions: ChatCompletions[] = choices.map(
+                        (choice) => ({
+                            id: 'chat-cmpl-1234abc',
+                            created: new Date(),
+                            choices: [choice],
+                            promptFilterResults: [],
+                        }),
+                    );
+
+                    assistant.streamChatCompletions.mockResolvedValue(
+                        Readable.from(
+                            createAsyncIterable<ChatCompletions>(completions),
+                        ),
+                    );
+                });
+
+                it('emits a "message" event from the assistant, with the non-JSON content', async () => {
+                    await thread.run(assistant);
+
+                    // The "message" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('message', (message) => {
+                            if (
+                                isChatResponseAssistantContentMessage(message)
+                            ) {
+                                resolve();
+                            }
+                        });
+                    });
+
+                    expect(emitSpy).nthCalledWith(2, 'message', {
+                        role: 'assistant',
+                        content:
+                            "I couldn't fulfill your request. Please try again.",
+                        toolCalls: [],
+                    });
+                });
+
+                it('emits a "completed" event', async () => {
+                    await thread.run(assistant);
+
+                    // The "completed" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('completed', resolve);
+                    });
+
+                    expect(emitSpy).nthCalledWith(4, 'completed');
+                });
+
+                it('also writes to the stream of the thread', async () => {
+                    let response = '';
+
+                    await thread.run(assistant);
+
+                    thread.stream?.on('data', (data) => {
+                        response += data;
+                    });
+
+                    // The "completed" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('completed', resolve);
+                    });
+
+                    expect(response).toEqual(
+                        "I couldn't fulfill your request. Please try again.",
+                    );
+                });
+            });
+
+            describe('when the tool call is both in the content as stringified JSON and in a regular tool call', () => {
+                const functionName = 'get_customer_profile';
+
+                beforeEach(() => {
+                    const choices: ChatChoice[] = [
+                        {
+                            delta: { content: '', role: 'assistant' },
+                            finishReason: null,
+                            index: 0,
+                            logprobs: null,
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: '{"',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: 'id":"',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                content: 'ABC"}',
+                                toolCalls: [],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                toolCalls: [
+                                    {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        index: 0,
+                                        id: 'tool-call-1234abc',
+                                        type: 'function',
+                                        function: {
+                                            name: functionName,
+                                            arguments: '',
+                                        },
+                                    } as ChatCompletionsFunctionToolCall,
+                                ],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                toolCalls: [
+                                    {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        index: 0,
+                                        function: {
+                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                            // @ts-ignore
+                                            name: undefined,
+                                            arguments: '{"',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                toolCalls: [
+                                    {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        index: 0,
+                                        function: {
+                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                            // @ts-ignore
+                                            name: undefined,
+                                            arguments: 'id":"',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: null,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {
+                                toolCalls: [
+                                    {
+                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                        // @ts-ignore
+                                        index: 0,
+                                        function: {
+                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                            // @ts-ignore
+                                            name: undefined,
+                                            arguments: 'ABC"}',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            index: 0,
+                            finishReason: 'tool_calls',
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            delta: {},
+                        },
+                    ];
+
+                    const completions: ChatCompletions[] = choices.map(
+                        (choice) => ({
+                            id: 'chat-cmpl-1234abc',
+                            created: new Date(),
+                            choices: [choice],
+                            promptFilterResults: [],
+                        }),
+                    );
+
+                    assistant.streamChatCompletions.mockResolvedValue(
+                        Readable.from(
+                            createAsyncIterable<ChatCompletions>(completions),
+                        ),
+                    );
+                });
+
+                it('emits a "message" event from the assistant, with the tool calls parameters', async () => {
+                    await thread.run(assistant);
+
+                    // The "message" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('message', (message) => {
+                            if (
+                                isChatResponseAssistantToolCallsMessage(message)
+                            ) {
+                                resolve();
+                            }
+                        });
+                    });
+
+                    expect(emitSpy).nthCalledWith(2, 'message', {
+                        role: 'assistant',
+                        content: null,
+                        toolCalls: [
+                            {
+                                id: 'tool-call-1234abc',
+                                type: 'function',
+                                function: {
+                                    name: functionName,
+                                    arguments: JSON.stringify({
+                                        id: 'ABC',
+                                    }),
+                                },
+                            },
+                        ],
+                    });
+                });
+
+                it('does NOT emit a "completed" event', async () => {
+                    await thread.run(assistant);
+
+                    // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('requires_action', resolve);
+                    });
+
+                    expect(emitSpy).not.toHaveBeenCalledWith('completed');
+                });
+
+                it('does NOT write to the stream of the thread', async () => {
+                    let response = '';
+
+                    await thread.run(assistant);
+
+                    thread.stream?.on('data', (data) => {
+                        response += data;
+                    });
+
+                    // The "requires_action" event is sent asynchronously, we need to wait for it to be emitted
+                    await new Promise<void>((resolve, reject) => {
+                        thread.on('error', reject);
+                        thread.on('requires_action', resolve);
+                    });
+
+                    expect(response).toEqual('');
+                });
+            });
+        });
     });
 });
 

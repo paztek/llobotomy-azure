@@ -136,6 +136,7 @@ class ThreadMessageConverter {
     }
 }
 
+const TOKEN_JSON_START = '{"';
 class Thread extends EventEmitter {
     constructor(id, messages = []) {
         super();
@@ -182,6 +183,8 @@ class Thread extends EventEmitter {
         }
         let content = null;
         let toolCalls = [];
+        let inHallucinatedToolCallInContent = false;
+        let hallucinatedJSONInContent = '';
         stream.on('data', (completion) => {
             if (!completion.id || completion.id === '') {
                 // First completion is empty when using old models like gpt-35-turbo
@@ -197,7 +200,33 @@ class Thread extends EventEmitter {
                 const err = new Error('No delta returned');
                 return this.emitImmediate('error', err);
             }
-            if (delta.content) {
+            if (delta.content && delta.content.length) {
+                if (content === null &&
+                    !inHallucinatedToolCallInContent &&
+                    delta.content.startsWith(TOKEN_JSON_START)) {
+                    inHallucinatedToolCallInContent = true;
+                    hallucinatedJSONInContent += delta.content;
+                    return;
+                }
+                if (content === null && inHallucinatedToolCallInContent) {
+                    hallucinatedJSONInContent += delta.content;
+                    // If the hallucinated JSON becomes parseable, it means we're at the end of the hallucinated tool call
+                    try {
+                        JSON.parse(hallucinatedJSONInContent);
+                        inHallucinatedToolCallInContent = false;
+                        hallucinatedJSONInContent = '';
+                        return;
+                    }
+                    catch (e) {
+                        return;
+                    }
+                }
+                /**
+                 * Sometimes, especially after some hallucinated JSON, the LLM adds a line break before the actual content
+                 */
+                if (content === null && delta.content.startsWith('\n')) {
+                    delta.content = delta.content.slice(1);
+                }
                 content = content ? content + delta.content : delta.content;
                 // Write also to the stream of the thread
                 this._stream?.push(delta.content);

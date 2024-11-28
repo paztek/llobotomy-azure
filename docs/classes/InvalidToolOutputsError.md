@@ -44,7 +44,7 @@ Error.constructor
 
 #### Defined in
 
-[src/thread/errors.ts:48](https://github.com/paztek/llobotomy-azure/blob/458351f/src/thread/errors.ts#L48)
+[src/thread/errors.ts:48](https://github.com/paztek/llobotomy-azure/blob/93d2d7b/src/thread/errors.ts#L48)
 
 ## Properties
 

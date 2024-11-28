@@ -39,4 +39,4 @@ so they can be sent again to the LLM.
 
 #### Defined in
 
-[src/thread/message.converter.ts:21](https://github.com/paztek/llobotomy-azure/blob/458351f/src/thread/message.converter.ts#L21)
+[src/thread/message.converter.ts:21](https://github.com/paztek/llobotomy-azure/blob/93d2d7b/src/thread/message.converter.ts#L21)

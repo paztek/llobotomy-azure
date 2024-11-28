@@ -21,6 +21,8 @@ import {
 } from './errors';
 import { ThreadMessageConverter } from './message.converter';
 
+const TOKEN_JSON_START = '{"';
+
 export class Thread extends EventEmitter {
     private _stream: Readable | null = null;
     private readonly _messages: ChatMessage[] = [];
@@ -80,6 +82,9 @@ export class Thread extends EventEmitter {
         let content: string | null = null;
         let toolCalls: ChatCompletionsFunctionToolCall[] = [];
 
+        let inHallucinatedToolCallInContent = false;
+        let hallucinatedJSONInContent = '';
+
         stream.on('data', (completion: ChatCompletions) => {
             if (!completion.id || completion.id === '') {
                 // First completion is empty when using old models like gpt-35-turbo
@@ -97,7 +102,38 @@ export class Thread extends EventEmitter {
                 return this.emitImmediate('error', err);
             }
 
-            if (delta.content) {
+            if (delta.content && delta.content.length) {
+                if (
+                    content === null &&
+                    !inHallucinatedToolCallInContent &&
+                    delta.content.startsWith(TOKEN_JSON_START)
+                ) {
+                    inHallucinatedToolCallInContent = true;
+                    hallucinatedJSONInContent += delta.content;
+                    return;
+                }
+
+                if (content === null && inHallucinatedToolCallInContent) {
+                    hallucinatedJSONInContent += delta.content;
+
+                    // If the hallucinated JSON becomes parseable, it means we're at the end of the hallucinated tool call
+                    try {
+                        JSON.parse(hallucinatedJSONInContent);
+                        inHallucinatedToolCallInContent = false;
+                        hallucinatedJSONInContent = '';
+                        return;
+                    } catch (e) {
+                        return;
+                    }
+                }
+
+                /**
+                 * Sometimes, especially after some hallucinated JSON, the LLM adds a line break before the actual content
+                 */
+                if (content === null && delta.content.startsWith('\n')) {
+                    delta.content = delta.content.slice(1);
+                }
+
                 content = content ? content + delta.content : delta.content;
 
                 // Write also to the stream of the thread

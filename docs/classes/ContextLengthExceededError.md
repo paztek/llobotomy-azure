@@ -44,7 +44,7 @@
 
 #### Defined in
 
-[src/thread/errors.ts:24](https://github.com/paztek/llobotomy-azure/blob/458351f/src/thread/errors.ts#L24)
+[src/thread/errors.ts:24](https://github.com/paztek/llobotomy-azure/blob/93d2d7b/src/thread/errors.ts#L24)
 
 ## Properties
 
